@@ -26,20 +26,7 @@ plugins/org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_15.0.2.v20210201
  - Download and install D:\ 경로 설치 후 Finish  
  - Servers 에 Tomcat add 후 프로젝트 연동해서 사용  
 
-### DB 추가(MySql)
- - 1층 창가쪽에 있는 PC와 연결되어 있음.
 
-##mysql 정보
- - 192.168.0.29:3780  
- - 3780 포트    
-
-
- - kotech  
- - kotech1234
-
-### github url
-
- - https://github.com/kotechdev1/kotech_eGov.git
 
 
 ### eclipse - git 연동하기 (이미 세팅된 사람은 생략 가능)
