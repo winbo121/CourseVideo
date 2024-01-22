@@ -1,0 +1,65 @@
+#####################################################################
+# TOP MENU
+#####################################################################
+top_menus: [
+   {
+      name: 콘텐츠 관리
+      ,roles: [ ROLE_ADMIN ]
+      ,children: [
+         { name: 강좌 등록 
+           ,mobile: true
+           ,pattern: /conage/courseEnrollMain/**
+           ,roles: [ ROLE_ADMIN ] }
+           ,target: false
+        ,{ name: 콘텐츠 등록
+           ,mobile: true
+           ,pattern: /conage/contentEnrollMain/**
+           ,roles: [ ROLE_ADMIN ] }
+           ,target: false
+      ]
+    }
+    ,{
+      name: 온라인 강좌
+      ,roles: [ ROLE_ANONYMOUS ]
+      ,children: [
+         { name: 강좌 찾기
+           ,mobile: true
+           ,pattern: /course/courseFind/**
+           ,roles: [ ROLE_ANONYMOUS ] }
+           ,target: false
+      ]
+    }
+    ,{
+      name: 커뮤니티
+      ,roles: [ ROLE_ANONYMOUS ]
+      ,children: [
+         { name: 공지사항 
+           ,mobile: true
+           ,pattern: /notice/noticeMain/**
+           ,roles: [ ROLE_ANONYMOUS ] }
+           ,target: false
+      ]
+    }
+    ,{
+      name: 통계
+      ,roles: [ ROLE_ADMIN ]
+      ,children: [
+         { name: 회원접속 기록 
+           ,mobile: true
+           ,pattern: /statics/accessRecordMain/**
+           ,roles: [ ROLE_ADMIN ] }
+           ,target: false
+        ,{ name: 활동 기록
+           ,mobile: true
+           ,pattern: /statics/activeRecordMain/**
+           ,roles: [ ROLE_ADMIN ] }
+           ,target: false
+        ,{ name: 검색 기록
+           ,mobile: true
+           ,pattern: /statics/searchRecordMain/**
+           ,roles: [ ROLE_ADMIN ] }
+           ,target: false   
+      ]
+    }
+]
+

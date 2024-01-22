@@ -1,0 +1,783 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="egovframework.work.course.mapper.KotechCourseMapper">
+
+	<select id="getJspTotalCount"
+		parameterType="egovframework.work.test.model.jsp.TestJspPagingSearch"
+		resultType="java.lang.Integer">
+		/* CourseMapper.getJspTotalCount */
+		select
+		IFNULL(count(x.course_nm),0)
+		from(
+		select
+		a.course_seq,
+		a.course_nm,
+		a.upd_user,
+		a.upd_dts,
+		a.course_round,
+		a.reg_inst_nm,
+		a.instructor_nm,
+		sum(c.vod_time_sec) as vod_time_sec
+		from tb_course a,
+		tb_contents_mapped b,
+		tb_contents c
+		where a.course_seq = b.course_seq
+		and b.contents_seq = c.contents_seq
+		and a.del_yn ='N'
+		and a.display_yn
+		='Y'
+		and a.use_yn = 'Y'
+		<!-- <if test=' !search_text.equals("") '>
+			AND a.course_nm LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if> -->
+		<if test=' !search_text.equals("") '>
+			<if test=' search_select == "c" '>
+				and a.course_nm LIKE CONCAT( '%', #{search_text} ,'%' )
+			</if>
+			<if test=' search_select == "i" '>
+				and a.reg_inst_nm LIKE CONCAT( '%', #{search_text} ,'%' )
+			</if>
+			<if test=' search_select == "n" '>
+				and a.instructor_nm LIKE CONCAT( '%', #{search_text} ,'%' )
+			</if>
+		</if>
+		<choose>
+			<when test='search_type == "" '>
+				
+			</when>
+			<when test=' search_type == "all" '>
+			
+			</when>
+			<when test=' search_type == "undefined" '>
+			
+			</when>
+			<when test=' search_type == "none" '>
+			
+			</when>
+			<when test=' search_type == null '>
+			
+			</when>
+			<otherwise>
+				and a.category_seq = #{search_type}
+			</otherwise>
+		</choose>
+		<if test=' search_inst != null and !search_inst.contains("") '>
+			and a.reg_inst_nm = #{search_inst}
+		</if>
+		<if test=' search_user != null and !search_user.contains("all") '>
+			and a.reg_inst_nm IN 
+				<foreach collection="search_user" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+		</if>
+		<choose>
+			<when test='search_chk.contains("all")' >
+			
+			</when>
+			<when test=' search_chk.equals("undefined") '>
+			
+			</when>
+			<when test=' search_chk.equals("null") '>
+			
+			</when>
+			<when test=' search_chk.size() == 0 '>
+			
+			</when>
+			<when test=' search_chk == null '>
+			
+			</when>
+			
+			<otherwise>
+				and a.category_seq IN 
+				<foreach collection="search_chk" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</otherwise>
+		</choose>
+		group by a.course_seq)x
+		
+		left join ts_cmmn_attach_file tt
+			on x.course_seq = tt.tar_info_pk
+			AND file_reg_gb = 'TB_COURSE_THUMBNAIL'
+		<!-- left join 
+			( select course_seq, count(course_seq) as review_cnt, round(avg(star_point),2) as star_point from
+            tb_course_score 
+            group by course_seq
+            ) tcs
+			on v.course_seq = tcs.course_seq -->
+		where tt.del_yn = 'N'
+
+	</select>
+
+	<select id="getJspPagedList"
+		parameterType="egovframework.work.test.model.jsp.TestJspPagingSearch"
+		resultType="java.util.Map">
+		/* CourseMapper.getJspPagedList */
+		select
+		v.course_seq,
+		(case
+		when
+		like_yn
+		is null
+		then 'N'
+		else 'Y'
+		end)as like_yn,
+		v.course_nm,
+		v.upd_user,
+		v.upd_dts,
+		v.course_round,
+		case when v.instructor_nm is null then '강사명 미등록'
+			else v.instructor_nm end instructor_nm,
+		case when v.reg_inst_nm is null then '회사명 미등록'
+			else v.reg_inst_nm end reg_inst_nm,
+		(case
+		when v.vod_hour = '0'
+		then ''
+		else
+		v.vod_hour
+		end) as vod_hour,
+		(case
+		when v.vod_min = '00'
+		then ''
+		else
+		v.vod_min
+		end) as vod_min,
+		v.role_type
+		,tt.*
+		,tcs.*
+		from(
+		select
+		x.course_seq,
+		(
+		select
+		tl.course_seq
+		from tb_course_bookmark tl
+		where
+		tl.user_id = #{user_id}
+		and tl.course_seq = x.course_seq
+		)as
+		like_yn,
+		x.course_nm,
+		x.upd_user,
+		x.upd_dts,
+		x.course_round,
+		x.instructor_nm,
+		x.reg_inst_nm,
+		IFNULL(TRUNCATE(x.vod_time_sec/3600,0),'0') as vod_hour,
+		IFNULL(TIME_FORMAT(SEC_TO_TIME(x.vod_time_sec), '%i'),'00') as
+		vod_min,
+		tui.role_type
+		from(
+		select
+		a.course_seq,
+		a.course_nm,
+		a.upd_user,
+		a.upd_dts,
+		a.course_round,
+		a.instructor_nm,
+		a.reg_inst_nm,
+		sum(c.vod_time_sec) as vod_time_sec
+		from
+		tb_course a,
+		tb_contents_mapped b,
+		tb_contents c
+		where a.course_seq =
+		b.course_seq
+		and b.contents_seq = c.contents_seq
+		and a.del_yn ='N'
+		and
+		a.use_yn = 'Y'
+		and
+		a.display_yn
+		='Y'
+		<if test=' !search_text.equals("") '>
+			<if test=' search_select == "c" '>
+				and a.course_nm LIKE CONCAT( '%', #{search_text} ,'%' )
+			</if>
+			<if test=' search_select == "i" '>
+				and a.reg_inst_nm LIKE CONCAT( '%', #{search_text} ,'%' )
+			</if>
+			<if test=' search_select == "n" '>
+				and a.instructor_nm LIKE CONCAT( '%', #{search_text} ,'%' )
+			</if>
+		</if>
+		<choose>
+			<when test='search_type == "" '>
+				
+			</when>
+			<when test=' search_type == "all" '>
+			
+			</when>
+			<when test=' search_type == "undefined" '>
+			
+			</when>
+			<when test=' search_type == "none" '>
+			
+			</when>
+			<when test=' search_type == null '>
+			
+			</when>
+			<otherwise>
+				and a.category_seq = #{search_type}
+			</otherwise>
+		</choose>
+		<choose>
+			<when test=' search_chk.contains("all") '>
+			
+			</when>
+			<when test=' search_chk.equals("undefined") '>
+			
+			</when>
+			<when test=' search_chk.equals("null") '>
+			
+			</when>
+			<when test=' search_chk.size() == 0 '>
+			
+			</when>
+			<when test=' search_chk == null '>
+			
+			</when>
+			<otherwise>
+				and a.category_seq IN 
+				<foreach collection="search_chk" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</otherwise>
+		</choose>
+		<if test=' search_inst != "" and search_inst != "all" and search_inst != null '>
+			and a.reg_inst_nm = #{search_inst}
+		</if>
+		<if test=' search_user != null and !search_user.contains("all") '>
+			and a.reg_inst_nm IN 
+				<foreach collection="search_user" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+		</if>
+		group by a.course_seq
+		order by upd_dts desc)x
+		left outer join
+		ts_user_info tui
+		on x.upd_user = tui.user_id)v
+		
+		left join ts_cmmn_attach_file tt
+			on v.course_seq = tt.tar_info_pk
+		left join 
+			( select course_seq, count(course_seq) as review_cnt, round(avg(star_point),2) as star_point from
+            tb_course_score 
+            group by course_seq
+            ) tcs
+			on v.course_seq = tcs.course_seq
+		where tt.del_yn = 'N'
+		AND file_reg_gb = 'TB_COURSE_THUMBNAIL'
+		order by v.upd_dts desc
+		
+		<if
+			test="@org.apache.commons.lang3.BooleanUtils@isTrue( isPaging )">
+			/* 페이징 처리 */
+			LIMIT #{start} , #{length}
+		</if>
+	</select>
+
+	<select id="getCourseGubunList" resultType="java.util.Map">
+		/* CourseMapper.getCourseGubunList */
+		select
+		f.code_seq,
+		f.code_nm ,
+		f.sort_no ,
+		f.code_descr ,
+		f.code_cnt
+		from(
+		select
+		gc.code_seq,
+		gc.code_nm ,
+		gc.sort_no ,
+		gc.code_descr ,
+		(select count(tc.course_seq)
+		from tb_course tc
+		where tc.category_seq = gc.code_seq
+		and tc.del_yn = 'N'
+		and tc.display_yn = 'Y'
+		and tc.use_yn = 'Y')as code_cnt
+		from
+		tb_code gc
+		where
+		gc.group_code ='301'
+		and gc.use_yn ='Y'
+		and
+		code != "*"
+		order by sort_no
+		asc)f
+
+
+	</select>
+	
+	<update id="insertLike" parameterType="java.util.Map">
+		/*
+		KotechCourseMapper.insertLike */
+		call SEL_INSDEL_LOG(#{user_id},
+		#{course_id});
+	</update>
+	
+
+	<select id="getLatestList" resultType="java.util.Map">
+		/* CourseMapper.getLatestList */
+		select
+		x.course_seq, 
+		x.course_nm, 
+		x.upd_user, 
+		x.reg_inst_nm, 
+		x.instructor_nm, 
+		tt.*
+		from(
+		select
+		a.course_nm,
+		a.course_seq,
+		a.category_seq,
+		a.upd_user,
+		a.upd_dts,
+		a.course_round,
+		a.use_yn,
+		a.display_yn,
+		a.del_yn,
+		a.reg_inst_nm,
+		a.instructor_nm,
+		sum(c.vod_time_sec) as vod_time_sec,
+		d.code_seq
+		from tb_course a,
+		tb_contents_mapped b,
+		tb_contents c,
+		tb_code d
+		where a.course_seq = b.course_seq
+		and b.contents_seq = c.contents_seq
+		and a.category_seq = d.code_seq
+		and a.del_yn ='N'
+		and a.display_yn='Y'
+		and a.use_yn = 'Y'
+		group by a.course_seq ,upd_user
+		) x
+		inner join ts_cmmn_attach_file tt
+		on x.course_seq = tt.tar_info_pk
+		where tt.del_yn = 'N'
+		AND tt.file_reg_gb = 'TB_COURSE_THUMBNAIL'
+		<!-- AND tt.expo_sort = 1 -->
+		and x.use_yn = 'Y'
+
+		order by x.upd_dts desc
+
+		limit 5
+	</select>
+	
+	
+	<select id="getRegUserList" resultType="java.util.Map">
+		/* CourseMapper.getRegUserList */
+		<!-- select
+		count(x.upd_user) as cnt, x.upd_user
+		from(
+		select
+		a.course_nm,
+		a.course_seq,
+		a.category_seq,
+		a.reg_user,
+		a.upd_user,
+		a.upd_dts,
+		a.course_round,
+		sum(c.vod_time_sec) as vod_time_sec,
+		d.code_seq
+		from tb_course a,
+		tb_contents_mapped b,
+		tb_contents c,
+		tb_code d
+		where a.course_seq = b.course_seq
+		and b.contents_seq = c.contents_seq
+		and a.category_seq = d.code_seq
+		and a.del_yn ='N'
+		and a.display_yn='Y'
+		group by a.course_seq ,upd_user
+		)x
+			left join ts_cmmn_attach_file tt 
+			on x.course_seq = tt.tar_info_pk 
+			where tt.del_yn = 'N' 
+			AND file_reg_gb = 'TB_COURSE_THUMBNAIL'
+		group by upd_user -->
+		
+<!-- 		select
+		 ifnull(count(x.upd_user),0) as cnt, 
+         case when x.instructor_nm is null then '강사명 미등록'
+			else x.instructor_nm end instructor_nm
+		from(
+		select
+		a.course_nm,
+		a.course_seq,
+		a.category_seq,
+		a.reg_user,
+		a.upd_user,
+		a.upd_dts,
+		a.course_round,
+		a.instructor_nm,
+		sum(c.vod_time_sec) as vod_time_sec,
+		d.code_seq
+		from tb_course a,
+		tb_contents_mapped b,
+		tb_contents c,
+		tb_code d
+		where a.course_seq = b.course_seq
+		and b.contents_seq = c.contents_seq
+		and a.category_seq = d.code_seq
+		  and a.del_yn ='N'
+		  and a.display_yn='Y'
+		 and a.use_yn='Y'
+		group by a.course_seq ,instructor_nm, upd_user
+		)x
+			left join ts_cmmn_attach_file tt 
+			on x.course_seq = tt.tar_info_pk 
+			where tt.del_yn = 'N' 
+			AND file_reg_gb = 'TB_COURSE_THUMBNAIL'
+		group by instructor_nm, upd_user; -->
+		select
+		 ifnull(count(x.upd_user),0) as cnt,       
+		case when x.reg_inst_nm is null then '회사명 미등록'
+			else x.reg_inst_nm end reg_inst_nm
+		from(
+		select
+		a.course_nm,
+		a.course_seq,
+		a.category_seq,
+		a.reg_user,
+		a.upd_user,
+		a.upd_dts,
+		a.course_round,
+		a.instructor_nm,
+		a.reg_inst_nm,
+		sum(c.vod_time_sec) as vod_time_sec,
+		d.code_seq
+		from tb_course a,
+		tb_contents_mapped b,
+		tb_contents c,
+		tb_code d
+		where a.course_seq = b.course_seq
+		and b.contents_seq = c.contents_seq
+		and a.category_seq = d.code_seq
+		  and a.del_yn ='N'
+		  and a.display_yn='Y'
+		 and a.use_yn='Y'
+		group by a.course_seq ,instructor_nm, upd_user
+		)x
+			left join ts_cmmn_attach_file tt 
+			on x.course_seq = tt.tar_info_pk 
+			where tt.del_yn = 'N' 
+			-- AND file_reg_gb = 'TB_COURSE_THUMBNAIL'
+		-- group by instructor_nm, reg_inst_nm, upd_user;
+		group by reg_inst_nm, upd_user;
+        
+	</select>
+
+
+
+	<!-- getCourseGubunList -->
+
+	<select id="getCourseContentsList"
+		parameterType="egovframework.work.course.model.KotechCourseModel"
+		resultType="java.util.Map">
+		/* KotechCourseMapper.getCourseContentsList */
+		
+		SELECT
+			A.course_seq,
+			B.contents_seq,
+			B.contents_mapped_seq,
+			<if test="@egovframework.common.util.LocalThread@isLogin() || @egovframework.common.util.LocalThread@isAdmin()"> 
+				CASE 
+					WHEN D.LEARN_SEQ IS NOT NULL AND D.LEARN_TIME <![CDATA[<]]> C.VOD_TIME_SEC
+				    THEN 'listening'
+				    WHEN D.LEARN_SEQ IS NOT NULL AND D.LEARN_TIME = C.VOD_TIME_SEC
+				    THEN 'complete'
+				    ELSE
+				    	'ready'  
+				END AS whatching_yn,
+				IFNULL(FLOOR((D.LEARN_TIME / C.VOD_TIME_SEC) * 100),0) AS contents_persent,
+				CASE
+					WHEN D.LEARN_SEQ IS NOT NULL AND D.LEARN_TIME <![CDATA[>]]> C.VOD_TIME_SEC
+					THEN CONCAT( '00:00:00'  ,'/', TIME_FORMAT(SEC_TO_TIME(C.VOD_TIME_SEC), '%H:%i:%s')) 
+					ELSE
+						CONCAT( IFNULL(TIME_FORMAT(SEC_TO_TIME(D.LEARN_TIME), '%H:%i:%s'),'00:00:00')  ,'/', TIME_FORMAT(SEC_TO_TIME(C.VOD_TIME_SEC), '%H:%i:%s')) 
+				END AS contents_watching_time,
+			</if>
+			C.contents_nm,
+			C.vod_gb,
+			TIME_FORMAT(SEC_TO_TIME(C.VOD_TIME_SEC), '%H:%i:%s') AS vod_time_sec
+		FROM TB_COURSE A
+		INNER JOIN TB_CONTENTS_MAPPED B ON A.COURSE_SEQ  = B.COURSE_SEQ  AND B.DEL_YN ='N'
+		INNER JOIN TB_CONTENTS C ON B.CONTENTS_SEQ = C.CONTENTS_SEQ AND C.USE_YN = 'Y' AND C.DEL_YN ='N'
+		<if test="@egovframework.common.util.LocalThread@isLogin() || @egovframework.common.util.LocalThread@isAdmin()"> 
+			LEFT OUTER JOIN TB_LEARN D ON B.CONTENTS_MAPPED_SEQ = D.CONTENTS_MAPPED_SEQ  AND D.DEL_YN = 'N'
+			AND D.USER_ID =<include refid="localThread.LOGIN_ID"/>
+		</if>
+		WHERE A.COURSE_SEQ = #{course_seq}
+		AND A.USE_YN = 'Y'
+		AND A.DEL_YN = 'N'
+		AND A.DISPLAY_YN = 'Y'
+
+	</select>
+
+	<select id="getCourseInfo"
+		parameterType="egovframework.work.course.model.KotechCourseModel"
+		resultType="egovframework.work.course.model.KotechCourseModel">
+		/* KotechCourseMapper.getCourseInfo */
+
+		SELECT  
+			A.course_nm,
+			A.course_subject,
+			ifnull(A.course_descr, '내용없음') as course_descr,
+			CASE 
+					WHEN SUM(VOD_TIME_SEC) <![CDATA[>]]> 0 AND SUM(VOD_TIME_SEC) <![CDATA[<=]]> 60  
+				    THEN TIME_FORMAT(SEC_TO_TIME(SUM(VOD_TIME_SEC)), '%s초')
+				    WHEN SUM(VOD_TIME_SEC) > 60 AND SUM(VOD_TIME_SEC) <![CDATA[<]]> 3600
+				    THEN TIME_FORMAT(SEC_TO_TIME(SUM(VOD_TIME_SEC)), '%i분%s초')
+				    WHEN SUM(VOD_TIME_SEC) <![CDATA[>=]]> 3600
+				    THEN TIME_FORMAT(SEC_TO_TIME(SUM(VOD_TIME_SEC)), '%H시간%i분%s초')
+				    ELSE
+				    	'00초' 
+			END AS all_secound_menu,
+			TIME_FORMAT(SEC_TO_TIME(SUM(VOD_TIME_SEC)), '%H:%i:%s') AS all_secound,
+			<if test="@egovframework.common.util.LocalThread@isLogin() || @egovframework.common.util.LocalThread@isAdmin()"> 
+				IFNULL(TIME_FORMAT(SEC_TO_TIME(SUM(
+				CASE
+				     WHEN D.LEARN_TIME <![CDATA[>]]> C.VOD_TIME_SEC
+				     THEN 0
+				     ELSE D.LEARN_TIME
+				END
+				)), '%H:%i:%s'),'00:00:00') AS watching_time,
+				IFNULL(FLOOR((SUM(
+				CASE
+				     WHEN D.LEARN_TIME <![CDATA[>]]> C.VOD_TIME_SEC
+				     THEN 0
+				     ELSE D.LEARN_TIME
+				END							
+				) / SUM(VOD_TIME_SEC)) * 100),0) AS course_persent,
+			</if>
+			COUNT(*) AS course_cnt,
+			U.user_name,
+			(case 
+            when U.role_type = 'ROLE_ADMIN'
+            then '관리자'
+            when U.role_type = 'ROLE_USER'
+            then '학습자'
+            end) as role_type,
+			A.course_round
+			,tcs.*
+		FROM TB_COURSE A
+		INNER JOIN 
+			TB_CONTENTS_MAPPED B 
+		ON A.COURSE_SEQ  = B.COURSE_SEQ AND B.DEL_YN = 'N'
+		INNER JOIN 
+			TB_CONTENTS C 
+		ON B.CONTENTS_SEQ = C.CONTENTS_SEQ  AND C.USE_YN = 'Y' AND C.DEL_YN = 'N'
+		<if test="@egovframework.common.util.LocalThread@isLogin() || @egovframework.common.util.LocalThread@isAdmin()"> 
+		LEFT OUTER JOIN 
+			TB_LEARN D 
+		ON B.CONTENTS_MAPPED_SEQ = D.CONTENTS_MAPPED_SEQ AND D.USER_ID =<include refid="localThread.LOGIN_ID"/> AND D.DEL_YN = 'N'
+		</if>
+		INNER JOIN 
+			TS_USER_INFO U
+		ON A.REG_USER = U.USER_ID
+		left join 
+			( select course_seq, count(course_seq) as review_cnt, round(avg(star_point),2) as star_point from
+            tb_course_score
+            where user_id = <include refid="localThread.LOGIN_ID"/>
+            group by course_seq
+            ) tcs
+			on A.course_seq = tcs.course_seq
+		WHERE A.COURSE_SEQ = #{course_seq}
+			AND A.USE_YN = 'Y'
+			AND A.DEL_YN = 'N'
+			AND A.DISPLAY_YN = 'Y'
+		GROUP BY A.COURSE_SEQ
+
+	</select>
+     
+    <select id="getContentsVideo"
+		parameterType="egovframework.work.course.model.KotechCourseModel"
+		resultType="java.util.Map">
+		/* KotechCourseMapper.getContentsVideo */
+
+		SELECT 
+           A.contents_seq,
+           A.contents_nm,
+		   A.vod_time_sec,
+		   A.vod_url,
+		   A.vod_gb
+		FROM TB_CONTENTS A
+		WHERE A.CONTENTS_SEQ = #{contents_seq}
+   		AND A.USE_YN = 'Y' 
+   		AND A.DEL_YN = 'N'
+
+	</select>
+
+
+	<select id="getCourseVideoInfo"
+		parameterType="egovframework.work.course.model.KotechCourseModel"
+		resultType="java.util.Map">
+		/* KotechCourseMapper.getCourseVideoInfo */
+
+		SELECT 
+			<if test="@egovframework.common.util.LocalThread@isLogin() || @egovframework.common.util.LocalThread@isAdmin()"> 
+			   C.learn_seq,
+			   C.contents_mapped_seq,
+			   C.user_id,
+			   C.learn_time,
+			</if>
+		   A.vod_time_sec,
+		   A.vod_url,
+		   A.vod_gb,
+		   A.contents_nm
+		FROM TB_CONTENTS A
+    	INNER JOIN  TB_CONTENTS_MAPPED B ON A.CONTENTS_SEQ =  B.CONTENTS_SEQ AND B.DEL_YN = 'N'
+    	<if test="@egovframework.common.util.LocalThread@isLogin() || @egovframework.common.util.LocalThread@isAdmin()"> 
+  			LEFT OUTER JOIN TB_LEARN C ON B.CONTENTS_MAPPED_SEQ = C.CONTENTS_MAPPED_SEQ AND C.USER_ID = <include refid="localThread.LOGIN_ID"/>
+  			AND C.DEL_YN = 'N'
+ 		</if>
+		WHERE A.CONTENTS_SEQ = #{contents_seq}
+   		AND B.CONTENTS_MAPPED_SEQ = #{contents_mapped_seq} 
+   		AND A.USE_YN = 'Y' 
+   		AND A.DEL_YN = 'N'
+
+	</select>
+	
+	<insert id="inserAddtViewCnt"
+		parameterType="egovframework.work.course.model.KotechCourseModel">
+		/* KotechCourseMapper.inserAddtViewCnt */
+		update tb_course
+		set view_cnt = IFNULL(view_cnt,0) + 1
+		where course_seq = #{course_seq}
+	</insert>	
+
+	<insert id="insertVideoTime"
+		parameterType="egovframework.work.course.model.KotechCourseModel">
+		/* KotechCourseMapper.insertVideoTime */
+		INSERT INTO TB_LEARN
+		(
+		CONTENTS_MAPPED_SEQ,
+		USER_ID,
+		LEARN_STRT_TIME,
+		LEARN_END_TIME,
+		COMPLETE_YN,
+		LEARN_TIME,
+		DEL_YN,
+		REG_DTS,
+		REG_USER,
+		UPD_DTS,
+		UPD_USER
+		)
+		values
+		(
+		#{contents_mapped_seq},
+		<include refid="localThread.LOGIN_ID"/>,
+		NOW(),
+		NOW(),
+		'N',
+		0,
+		'N',
+		NOW(),
+		<include refid="localThread.LOGIN_ID"/>,
+		NOW(),
+		<include refid="localThread.LOGIN_ID"/>
+		) 
+		
+	</insert>
+
+	<insert id="updateVideoTime"
+		parameterType="egovframework.work.course.model.KotechCourseModel">
+		/* KotechCourseMapper.updateVideoTime */		
+		UPDATE TB_LEARN 
+		SET 
+		LEARN_TIME = #{learn_time},		
+		LEARN_END_TIME = NOW(),	
+		UPD_DTS = NOW(),
+		UPD_USER = 
+		<include refid="localThread.LOGIN_ID"/>
+		WHERE CONTENTS_MAPPED_SEQ = #{contents_mapped_seq}
+		AND USER_ID = 
+		<include refid="localThread.LOGIN_ID"/>	
+			
+	</insert>
+	
+	<insert id="insertReviewScore"
+		parameterType="java.util.Map">
+		/* KotechCourseMapper.insertReviewScore */		
+		INSERT INTO tb_course_score 
+		(
+		course_seq,
+		user_id,
+		star_point,
+		reg_dts,
+		upd_dts
+		)
+		values
+		(
+			#{course_seq},
+			<include refid="localThread.LOGIN_ID"/>,	
+			#{star_point},
+			sysdate(),
+			sysdate()
+		)	
+		ON DUPLICATE KEY UPDATE  
+   		 star_point = #{star_point}
+  		,upd_dts = now()
+	</insert>
+	
+	
+	<select id="getReviewHist"
+		parameterType="egovframework.work.course.model.KotechCourseModel" resultType="java.util.Map">
+		/* KotechCourseMapper.getReviewHist */		
+		
+        SELECT 
+			avg(star_point) as avg, count(star_point) as cnt
+		FROM 
+			TB_COURSE_SCORE
+		<!-- WHERE 
+			USER_ID = <include refid="localThread.LOGIN_ID"/>
+		AND
+			COURSE_SEQ = #{course_seq} -->
+		WHERE
+			COURSE_SEQ = #{course_seq}
+		
+	</select>
+	
+	<select id="outerCompleteCnt"
+		parameterType="egovframework.work.course.model.KotechCourseModel" resultType="java.lang.Integer">
+		/* KotechCourseMapper.outerCompleteCnt */		
+		
+       	select  
+			count(*)
+		from tb_learn tl
+		left join tb_contents_mapped tcm
+			on tl.contents_mapped_seq = tcm.contents_mapped_seq
+			and tcm.del_yn = 'N'
+		left join tb_course tc
+			on tc.course_seq = tcm.course_seq
+		where tl.user_id = <include refid="localThread.LOGIN_ID"/>
+		and tc.type_seq = 188
+		and tl.learn_time = 0
+		and tc.course_seq= #{course_seq};
+		
+	</select>
+	
+	<select id="youtubeCompleteCnt"
+		parameterType="egovframework.work.course.model.KotechCourseModel" resultType="java.lang.Integer">
+		/* KotechCourseMapper.youtubeCompleteCnt */		
+		
+       	select  
+			count(*)
+		from tb_learn tl
+		left join tb_contents_mapped tcm
+			on tl.contents_mapped_seq = tcm.contents_mapped_seq
+			and tcm.del_yn = 'N'
+		left join tb_course tc
+			on tc.course_seq = tcm.course_seq
+		where tl.user_id = <include refid="localThread.LOGIN_ID"/>
+		and tc.type_seq = 534
+		and tc.course_seq= #{course_seq};
+		
+	</select>
+
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="egovframework.work.search.mapper.CommonSearchMapper">
+
+	<insert id="insertSearchLog" parameterType="java.util.Map">
+		/*
+		egovframework.work.search.mapper.CommonSearchMapper.insertSearchLog */
+		INSERT INTO ts_search_log(
+		user_id,
+		login_yn,
+		search_descr,
+		search_place,
+		search_type
+		)
+		values(
+		#{userId},
+		#{loginYn},
+		#{searchTxt},
+		#{searchPlace},
+		#{searchType}
+		)
+	</insert>
+
+
+
+
+
+
+</mapper>

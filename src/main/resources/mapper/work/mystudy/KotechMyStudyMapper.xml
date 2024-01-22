@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.work.mystudy.mapper.KotechMyStudyMapper">
+
+	<select id="getKotechMyStudyJspTotalCount" parameterType="egovframework.work.mystudy.model.KotechMyStudyJspPagingSearch"
+										  		resultType="java.lang.Integer">
+		/* MyStudyMapper.getKotechMyStudyJspTotalCount */
+		select
+			count(*)
+		from (
+		select
+			course.*
+		    ,learn.strt_time
+		    ,learn.end_time
+		    ,floor(total_learn_time/total_vod_time*100) as total_progress
+		    ,case
+				when (total_learn_time/total_vod_time*100) = 100 then 'Y'
+		        else 'N'
+			 end as is_done
+		from
+		(
+		select 
+			 tc.course_seq
+			,tc.course_nm
+		    ,(select code_nm from tb_code where group_code = 301 and code_seq = tc.category_seq) as category_nm
+		    ,tc.type_seq
+		    ,tc.use_yn
+		    ,tcaf.orgin_filenm
+			,tcaf.save_filenm
+			,tcaf.file_save_path
+			,tcaf.file_ext
+			,tcaf.file_size
+			,sum(tcs.vod_time_sec) as total_vod_time
+		 from 			 
+			 tb_course tc
+			,ts_cmmn_attach_file tcaf
+			,tb_contents tcs
+            ,tb_contents_mapped tcm
+		where 1=1
+		 /* course */ 
+		and tc.course_seq = tcaf.tar_info_pk
+		and file_reg_gb = 'TB_COURSE_THUMBNAIL'
+		and tc.display_yn = 'Y'
+		and tc.del_yn = 'N'
+		and tcaf.del_yn = 'N'
+		/* contents */
+		and tc.course_seq = tcm.course_seq
+        and tcm.contents_seq = tcs.contents_seq
+        and tcs.use_yn = 'Y'
+        and tcs.del_yn = 'N'
+        and tcm.del_yn = 'N'
+        group by
+        	 tc.course_seq
+			,tc.course_nm
+			,tc.category_seq
+		   	,tc.type_seq
+		   	,tc.use_yn
+		   	,tcaf.orgin_filenm
+			,tcaf.save_filenm
+			,tcaf.file_save_path
+			,tcaf.file_ext
+			,tcaf.file_size
+		) course,
+		(
+		select 
+			 tcm.course_seq
+			 ,DATE_FORMAT(MIN(tl.learn_strt_time), <include refid="localThread.YYYY_MM_DD"/>) AS strt_time
+			 ,DATE_FORMAT(MAX(tl.learn_end_time), <include refid="localThread.YYYY_MM_DD"/>) AS end_time
+		     ,(		sum(case
+				when tl.learn_time <![CDATA[>]]> tcs.vod_time_sec then 0
+		        else tl.learn_time
+			  end)
+		      ) as total_learn_time
+		from tb_learn tl, tb_contents_mapped tcm, tb_contents tcs
+		where tl.user_id = <include refid="localThread.LOGIN_ID"/>
+		and tl.del_yn = 'N'
+		and tl.contents_mapped_seq = tcm.contents_mapped_seq
+		and tcs.contents_seq = tcm.contents_seq
+		and tcm.del_yn = 'N'
+		and tcs.use_yn = 'Y'
+		and tcs.del_yn = 'N'
+		GROUP BY tcm.course_seq
+		) learn
+		where course.course_seq = learn.course_seq
+		) result
+		WHERE 1=1
+		<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isSearch )">
+			AND trim(result.course_nm) like CONCAT('%',#{search_text},'%')
+		</if>
+		<if test='search_type != null and search_type.equals("learning") '>
+			AND	result.is_done = 'N'
+			AND	result.type_seq IN (186,187)
+		</if>
+		<if test='search_type != null and search_type.equals("done") '>
+			AND	result.is_done = 'Y'
+			AND	result.type_seq IN (186,187)
+		</if>
+		<if test='search_type != null and search_type.equals("outCourse") '>
+			AND	result.type_seq IN (188,534)
+		</if>
+	</select>
+
+	<select id="getKotechMyStudyJspPagedList" parameterType="egovframework.work.mystudy.model.KotechMyStudyJspPagingSearch"
+										  	resultType="java.util.Map">
+		/* MyStudyMapper.getKotechMyStudyJspPagedList */
+		select
+			result.*
+		from (
+		select
+			course.*
+		    ,learn.strt_time
+		    ,learn.end_time
+		    ,floor(total_learn_time/total_vod_time*100) as total_progress
+		    ,case
+				when (total_learn_time/total_vod_time*100) = 100 then 'Y'
+		        else 'N'
+			 end as is_done
+		from
+		(
+		select 
+			 tc.course_seq
+			,tc.course_nm
+		    ,(select code_nm from tb_code where group_code = 301 and code_seq = tc.category_seq) as category_nm
+		    ,tc.type_seq
+		    ,tc.use_yn
+		    ,tcaf.orgin_filenm
+			,tcaf.save_filenm
+			,tcaf.file_save_path
+			,tcaf.file_ext
+			,tcaf.file_size
+			,sum(tcs.vod_time_sec) as total_vod_time
+		 from 			 
+			 tb_course tc
+			,ts_cmmn_attach_file tcaf
+			,tb_contents tcs
+            ,tb_contents_mapped tcm
+		where 1=1
+		 /* course */ 
+		and tc.course_seq = tcaf.tar_info_pk
+		and file_reg_gb = 'TB_COURSE_THUMBNAIL'
+		and tc.display_yn = 'Y'
+		and tc.del_yn = 'N'
+		and tcaf.del_yn = 'N'
+		/* contents */
+		and tc.course_seq = tcm.course_seq
+        and tcm.contents_seq = tcs.contents_seq
+        and tcs.use_yn = 'Y'
+        and tcs.del_yn = 'N'
+        and tcm.del_yn = 'N'
+        group by
+        	 tc.course_seq
+			,tc.course_nm
+			,tc.category_seq
+		   	,tc.type_seq
+		   	,tc.use_yn
+		   	,tcaf.orgin_filenm
+			,tcaf.save_filenm
+			,tcaf.file_save_path
+			,tcaf.file_ext
+			,tcaf.file_size
+		) course,
+		(
+		select 
+			 tcm.course_seq
+			 ,DATE_FORMAT(MIN(tl.learn_strt_time), <include refid="localThread.YYYY_MM_DD"/>) AS strt_time
+			 ,DATE_FORMAT(MAX(tl.learn_end_time), <include refid="localThread.YYYY_MM_DD"/>) AS end_time
+		     ,(		sum(case
+				when tl.learn_time <![CDATA[>]]> tcs.vod_time_sec then 0
+		        else tl.learn_time
+			  end)
+		      ) as total_learn_time
+		from tb_learn tl, tb_contents_mapped tcm, tb_contents tcs
+		where tl.user_id = <include refid="localThread.LOGIN_ID"/>
+		and tl.del_yn = 'N'
+		and tl.contents_mapped_seq = tcm.contents_mapped_seq
+		and tcs.contents_seq = tcm.contents_seq
+		and tcm.del_yn = 'N'
+		and tcs.use_yn = 'Y'
+		and tcs.del_yn = 'N'
+		GROUP BY tcm.course_seq
+		) learn
+		where course.course_seq = learn.course_seq
+		) result
+		WHERE 1=1
+		<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isSearch )">
+			AND trim(result.course_nm) like CONCAT('%',#{search_text},'%')
+		</if>
+		<if test='search_type != null and search_type.equals("learning") '>
+			AND	result.is_done = 'N'
+			AND	result.type_seq IN (186,187)
+		</if>
+		<if test='search_type != null and search_type.equals("done") '>
+			AND	result.is_done = 'Y'
+			AND	result.type_seq IN (186,187)
+		</if>
+		<if test='search_type != null and search_type.equals("outCourse") '>
+			AND	result.type_seq IN (188,534)
+		</if>
+
+		<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isPaging )">
+		/* 페이징 처리 */
+		LIMIT #{start} , #{length}
+		</if>
+	</select>
+
+</mapper>

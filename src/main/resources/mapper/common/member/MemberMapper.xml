@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.common.component.member.mapper.MemberMapper">
+
+	<!-- 회원가입 시 아이디 중복 확인 -->
+	<select id="isAlreadyUserId" parameterType="java.util.Map"
+									   resultType="java.lang.Boolean">
+		/* MemberMapper.isAlreadyUserId */
+		SELECT
+		  CASE WHEN COUNT(*) = 0
+		   		 THEN FALSE
+		    	 ELSE TRUE
+		  END
+		FROM TS_USER_INFO as tui
+		WHERE tui.user_id = #{user_id}
+	</select>
+	
+	<!-- 단일 등록시 아이디 중복 확인 -->
+	<select id="isAlreadyUserIdStu" parameterType="java.util.Map"
+									   resultType="java.lang.Boolean">
+		/* MemberMapper.isAlreadyUserIdStu */
+		SELECT
+		  CASE WHEN COUNT(user_id) = 0
+		   		 THEN FALSE
+		    	 ELSE TRUE
+		  END
+		FROM TS_USER_INFO
+		WHERE user_id = #{user_id}
+	</select>
+	
+	<!-- 이메일 인증코드 확인 -->
+	<select id="isCodeYn" parameterType="java.util.Map"
+									   resultType="java.lang.Boolean">
+		/* MemberMapper.isAlreadyUserId */
+		SELECT
+		  CASE WHEN COUNT(*) = 0
+		   		 THEN FALSE
+		    	 ELSE TRUE
+		  END
+		FROM TS_TEMP_EMAIL_CODE as TTEC
+        WHERE user_email = #{email}
+        AND at_code = #{at_code}
+	</select>
+	
+
+	<select id="isAlreadyUserEmail" parameterType="java.util.Map"
+										resultType="java.lang.Boolean">
+		/* MemberMapper.isAlreadyUserEmail */
+		SELECT
+		  CASE WHEN COUNT(user_email) = 0
+		   		 THEN FALSE
+		    	 ELSE TRUE
+		  END
+		FROM TS_USER_INFO
+		WHERE user_email = #{user_email}
+		
+		<if test="@egovframework.common.util.LocalThread@isLogin()">
+			AND user_id <![CDATA[ <> ]]> <include refid="localThread.LOGIN_ID"/>
+		</if>
+	</select>
+	
+	
+	<select id="isAlreadyUserEmailExceptForUserId" parameterType="java.util.Map"
+										resultType="java.lang.Boolean">
+		/* MemberMapper.isAlreadyUserEmailExceptForUserId */
+		SELECT
+		  CASE WHEN COUNT(user_email) = 0
+		   		 THEN FALSE
+		    	 ELSE TRUE
+		  END
+		FROM TS_USER_INFO
+		WHERE user_email = #{user_email}
+		
+		<if test="@egovframework.common.util.LocalThread@isLogin()">
+			AND user_id <![CDATA[ <> ]]> #{user_id}
+		</if>
+	</select>
+	
+	
+	<select id="isAlreadyTeacher" parameterType="java.util.Map"
+										resultType="java.lang.Boolean">
+		/* MemberMapper.isAlreadyTeacher */
+		SELECT
+			CASE WHEN COUNT( YER.year_seq ) = 0
+		   		 THEN FALSE
+		    	 ELSE TRUE
+			END 
+		FROM TS_USER_YEAR AS YER
+		WHERE 1 = 1
+		AND YER.transfer_yn = 'N'
+		AND YER.sch_cd = #{sch_cd}
+		AND YER.sch_grade = #{sch_grade}
+		AND YER.sch_class = #{sch_class}
+		AND YER.year_cd = #{year_cd}
+		AND EXISTS ( SELECT 1 FROM TS_USER_INFO WHERE user_id = YER.user_id AND role_type = 'ROLE_TEACHER' )
+		<if test="@egovframework.common.util.LocalThread@isLogin()">
+			AND YER.user_id <![CDATA[ <> ]]> <include refid="localThread.LOGIN_ID"/>
+		</if>
+	</select>
+	
+	
+	<insert id="addTempEmailCode" parameterType ="java.util.Map">
+		/* MemberMapper.addTempEmailCode */
+		INSERT INTO TS_TEMP_EMAIL_CODE
+		(
+			user_email
+			,at_code
+			,regist_dt
+		)
+		VALUES
+		(
+			#{email}
+			,#{ran_code}
+			,NOW()
+		)
+		ON DUPLICATE KEY UPDATE
+		  at_code = #{ran_code},
+		  modify_dt = NOW()
+	</insert>
+	
+
+	<insert id="addTsUserInfo" parameterType="egovframework.common.component.member.model.TsUserInfo">
+		/* MemberMapper.addTsUserInfo */
+		INSERT INTO TS_USER_INFO
+		(
+			user_id
+			,user_name
+			,role_type
+			,user_pw
+			,user_email
+			,badge_grade
+			,user_regist_dt
+			,regist_id
+			,regist_dt
+			,modify_id
+			,modify_dt
+			<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( gender )">
+			,gender
+			</if>
+			,zip_code
+			,user_addr
+			,user_dtl_addr
+			,sigungu_code
+			,sido_code
+			,age
+			,job_code
+			,phone
+		)
+		VALUES
+		(
+			#{user_id}
+			,#{user_name}
+			,#{role_type}
+			,#{user_pw}
+			,#{user_email}
+			,#{badge_grade}
+			,NOW()
+			,#{user_id}
+			,NOW()
+			,#{user_id}
+			,NOW()
+			<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( gender )">
+			,#{gender}
+			</if>
+			,#{zip_code}
+			,#{user_addr}
+			,#{user_dtl_addr}
+			,#{sigungu_code}
+			,#{sido_code}
+			,#{age}
+			,#{job_code}
+			,#{phone}
+		)
+	</insert>
+
+	<insert id="addTsUserYear"  parameterType="egovframework.common.component.member.model.TsUserYear">
+		/* MemberMapper.addTsUserYear */
+		INSERT INTO TS_USER_YEAR
+		(
+			year_cd
+			,user_id
+			,sch_cd
+			,sch_grade
+			,sch_class
+			,regist_dt
+		)
+		VALUES
+		(
+			#{year_cd}
+			,#{user_id}
+			,#{sch_cd}
+			,#{sch_grade}
+			,#{sch_class}
+			,NOW()
+		)
+	</insert>
+
+	<delete id="removeTsUserInfo" parameterType="java.util.Map">
+		/* MemberMapper.removeTsUserInfo */
+		UPDATE TS_USER_INFO
+		SET 
+			 DEL_YN = 'Y'
+			,MODIFY_ID = #{user_id}
+			,MODIFY_DT = SYSDATE()
+		WHERE user_id = #{user_id}
+	</delete>
+
+
+	<delete id="removeTsUserYear" parameterType="java.util.Map">
+		/* MemberMapper.removeTsUserYear */
+		DELETE FROM TS_USER_YEAR
+		WHERE user_id = #{user_id}
+	</delete>
+	
+	<insert id ="addWithdrawalHistoryLog" parameterType="java.util.Map">
+		/* MemberMapper.addWithdrawalHistoryLog */
+		
+		INSERT INTO TS_WITHDRAWAL_HISTORY_LOG (
+			user_id
+			,role_type
+			,regist_dt
+		)
+		
+		VALUES(
+			#{user_id}
+			,#{role_type}
+			,NOW()
+		)
+	</insert>
+
+
+	<update id="modifyTsUserInfo" parameterType="java.util.Map">
+		/* MemberMapper.modifyTsUserInfo */
+		UPDATE TS_USER_INFO
+		SET modify_dt = NOW()
+			, modify_id = <include refid="localThread.LOGIN_ID"/>
+			, phone = #{phone}
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( user_name )">
+			, user_name = #{user_name}
+		</if>
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( user_pw )">
+			, user_pw = #{user_pw}
+		</if>
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( gender )">
+			, gender = #{gender}
+		</if>
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( user_email )">
+			, user_email = #{user_email}
+		</if>
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( role_type )">
+			, role_type = #{role_type}
+		</if>
+		
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( zip_code )">
+			, zip_code = #{zip_code}
+		</if>
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( user_addr )">
+			, user_addr = #{user_addr}
+		</if>
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( user_dtl_addr )">
+			, user_dtl_addr = #{user_dtl_addr}
+		</if>
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( sigungu_code )">
+			, sigungu_code = #{sigungu_code}
+		</if>
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( sido_code )">
+			, sido_code = #{sido_code}
+		</if>
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( age )">
+			, age = #{age}
+		</if>
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( job_code )">
+			, job_code = #{job_code}
+		</if>
+		WHERE user_id = #{user_id}
+	</update>
+
+	<update id="modifyTsUserYear" parameterType="egovframework.common.component.member.model.TsUserYear">
+		/* MemberMapper.modifyTsUserYear */
+		UPDATE TS_USER_YEAR TUY
+		SET
+		<choose>
+			<when test='@org.apache.commons.lang3.StringUtils@equals(transfer_yn, "N")'>
+				TUY.sch_cd = #{sch_cd}
+				,TUY.sch_grade = #{sch_grade}
+				,TUY.sch_class = #{sch_class}
+			</when>
+			<otherwise>
+				TUY.transfer_yn = #{transfer_yn}
+			</otherwise>
+		</choose>
+
+		WHERE TUY.user_id = #{user_id}
+		AND TUY.year_cd = #{year_cd}
+		AND TUY.transfer_yn = 'N'
+	</update>
+
+	<select id="getMembers" parameterType="java.util.Map"
+									resultType="egovframework.common.component.member.model.MemberDetail">
+		/* MemberMapper.getMembers */
+		SELECT
+			 USR.USER_ID
+			,USR.USER_NAME
+			,(case 
+            	when USR.role_type = 'ROLE_ADMIN'
+            	then '관리자'
+            	when USR.role_type = 'ROLE_USER'
+            	then '학습자'
+             end) as role_type
+			,USR.USER_PW
+			,USR.USER_REGIST_DT
+			,USR.FIRST_LOGIN_DT
+			,USR.LAST_LOGIN_DT
+			,USR.GENDER
+			,USR.USER_EMAIL
+			,USR.ZIP_CODE
+			,USR.SIDO_CODE
+			,USR.SIGUNGU_CODE
+			,USR.USER_ADDR
+			,USR.USER_DTL_ADDR
+			,USR.AGE
+			,USR.JOB_CODE
+			,USR.PHONE
+		FROM TS_USER_INFO USR
+		WHERE USR.user_id =  #{user_id}
+	</select>
+
+
+	<select id="findUserId" parameterType="java.util.Map"
+								resultType="java.lang.String">
+		/* MemberMapper.findUserId */
+		SELECT user_id
+		FROM TS_USER_INFO
+		WHERE user_email = #{user_email}
+		ORDER BY user_regist_dt DESC
+		LIMIT 1
+	</select>
+
+	<select id="reLogin" parameterType="java.util.Map"
+							resultType="java.lang.Boolean">
+		/* MemberMapper.reLogin */
+		SELECT	CASE user_pw WHEN #{user_pw} THEN TRUE
+				ELSE FALSE
+				END
+		FROM TS_USER_INFO
+		WHERE user_id = <include refid="localThread.LOGIN_ID"/>
+	</select>
+	
+	
+	<select id="goWordGameSiteCheck" parameterType="java.util.Map"
+							resultType="java.lang.Integer">
+		/* MemberMapper.goWordGameSiteCheck */
+		SELECT	COUNT(*)
+		FROM TS_DAYS_QUIZ
+		WHERE DATE_CD = DATE_FORMAT(NOW(),'%Y%m%d') AND USER_ID = <include refid="localThread.LOGIN_ID"/> AND FINISH_YN = 'Y' AND TIMES_CD =2
+	</select>
+	
+
+	<select id="wordGameApi" parameterType="egovframework.common.component.member.model.MemberDetail"
+							resultType="egovframework.common.component.member.model.MemberDetail">
+							
+		  /* MemberMapper.wordGameApi */
+		  SELECT 
+			    A.USER_ID,
+			    A.USER_NAME,
+			    B.SCH_CD,
+			    (SELECT 
+			            SCH_NAME
+			        FROM
+			            TS_SCH_CODE
+			        WHERE
+			            SCH_CD = B.SCH_CD) sch_name,
+			    B.sch_grade,
+			    B.sch_class,
+			    A.gender,
+			    A.badge_grade,
+			    A.reward_point,
+			    COUNT(C.USER_ID) quiz_cnt
+	      FROM TS_USER_INFO A INNER JOIN TS_USER_YEAR B
+	      ON A.user_id = B.user_id
+	      LEFT OUTER JOIN TS_DAYS_QUIZ C
+	      ON A.user_id = C.user_id
+	      AND C.DATE_CD = DATE_FORMAT(NOW(),'%Y%m%d')
+	      AND C.times_cd = '2'
+	      AND C.finish_yn = 'Y'
+		  WHERE A.user_id = #{user_id}
+	      AND A.USER_PW = #{user_pw}
+	      AND B.year_cd = DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 2 MONTH),'%Y')
+	      AND B.TRANSFER_YN = 'N'
+	      GROUP BY A.USER_ID, A.USER_NAME, B.SCH_CD, B.sch_grade, SCH_CLASS, A.gender
+	</select>
+	
+	
+	<delete id="removeTsUserInfos" parameterType="list">
+		/* MemberMapper.removeTsUserInfoS */
+		DELETE FROM TS_USER_INFO
+		WHERE user_id IN
+		(
+		<foreach item="item" index="index" collection="list" separator=",">
+			#{item}
+		</foreach>
+		)
+	</delete>
+
+
+	<delete id="removeTsUserYears" parameterType="list">
+		/* MemberMapper.removeTsUserYearS */
+		DELETE FROM TS_USER_YEAR
+		WHERE user_id IN
+		(
+		<foreach item="item" index="index" collection="list" separator=",">
+			#{item}
+		</foreach>
+		)
+	</delete>
+	
+	<!-- 시도 코드 -->
+	<select id="getSidoCode"  resultType="java.util.Map">
+		/* MemberMapper.getSidoCode */
+		SELECT 
+			*
+		FROM TB_CODE
+		WHERE GROUP_CODE = 307
+		AND USE_YN = 'Y'
+		ORDER BY CODE_SEQ
+	</select>
+	
+	<!-- 직업 분류 코드 -->
+	<select id="getJobCode"  resultType="java.util.Map">
+		/* MemberMapper.getJobCode */
+		SELECT 
+			*
+		FROM TB_CODE
+		WHERE GROUP_CODE = 306
+		AND USE_YN = 'Y'
+		ORDER BY CODE_SEQ
+	</select>
+	
+	
+</mapper>

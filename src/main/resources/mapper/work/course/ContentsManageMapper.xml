@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.work.course.mapper.ContentsManageMapper">
+
+
+
+	<select id="getContentsTotalCount" parameterType="egovframework.work.course.model.ContentsSearch"
+										  resultType="java.lang.Integer">
+		/* ContentsManageMapper.getContentsTotalCount */
+		SELECT
+			COUNT(DISTINCT(TC.CONTENTS_SEQ))
+		FROM
+			TB_CONTENTS TC
+		INNER JOIN
+			TS_USER_INFO TU
+		ON TU.USER_ID = TC.REG_USER
+		LEFT JOIN
+			TB_CONTENTS_MAPPED TCM
+		ON	TCM.CONTENTS_SEQ = TC.CONTENTS_SEQ
+		AND TCM.DEL_YN = 'N'
+		LEFT JOIN
+			TB_COURSE TCS
+		ON TCS.COURSE_SEQ = TCM.COURSE_SEQ
+		AND TCS.DEL_YN = 'N'
+		AND TCS.USE_YN = 'Y'
+		WHERE
+			1=1
+		AND
+			TC.DEL_YN = 'N'
+	<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty(search_tap)">
+		<if test='search_tap.equals("link")'>
+		AND TC.VOD_GB = 'O'
+		</if>
+		<if test='search_tap.equals("video")'>
+		AND TC.VOD_GB = 'M'
+		</if>
+		<if test='search_tap.equals("youtube")'>
+		AND TC.VOD_GB = 'Y'
+		</if>
+	</if>
+	<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isSearch )">
+		<if test=' search_type.equals("all") '>
+		AND (
+			TC.CONTENTS_SEQ LIKE CONCAT( '%', #{search_text} ,'%' )
+			OR
+			TC.CONTENTS_NM LIKE CONCAT( '%', #{search_text} ,'%' )
+			OR
+			TU.USER_NAME LIKE CONCAT( '%', #{search_text} ,'%' )
+		)
+		</if>
+		<if test=' search_type.equals("VN") '>
+		AND TC.CONTENTS_NM LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("VR") '>
+		AND TU.USER_NAME LIKE CONCAT( '%', #{search_text} ,'%' ) 
+		</if>
+	</if>
+
+	</select>
+
+
+	<select id="getContentsJspPagedList" parameterType="egovframework.work.course.model.ContentsSearch"
+										  resultType="java.util.Map">
+		/* ContentsManageMapper.getContentsJspPagedList */
+	    SELECT
+		    tc.contents_seq
+		    , tc.contents_nm
+		    , tc.vod_gb
+		    , tc.use_yn
+		    , date_format(tc.reg_dts, '%Y-%m-%d %T') as reg_dts
+		    , tc.reg_user
+		    , tu.user_name as reg_user_nm
+		    , date_format(tc.upd_dts, '%Y-%m-%d %T') as upd_dts
+		    , CASE
+				WHEN <![CDATA[COUNT(tcs.course_seq) > 0]]> THEN 'N'
+				ELSE 'Y'
+			END AS update_yn
+		FROM
+			TB_CONTENTS TC
+		INNER JOIN
+			TS_USER_INFO TU
+		ON TU.USER_ID = TC.REG_USER
+		LEFT JOIN
+			TB_CONTENTS_MAPPED TCM
+		ON	TCM.CONTENTS_SEQ = TC.CONTENTS_SEQ
+		AND TCM.DEL_YN = 'N'
+		LEFT JOIN
+			TB_COURSE TCS
+		ON TCS.COURSE_SEQ = TCM.COURSE_SEQ
+		AND TCS.DEL_YN = 'N'
+		AND TCS.USE_YN = 'Y'
+		WHERE
+			1=1
+		AND
+			TC.DEL_YN = 'N'
+	<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty(search_tap)">
+		<if test='search_tap.equals("link")'>
+		AND TC.VOD_GB = 'O'
+		</if>
+		<if test='search_tap.equals("video")'>
+		AND TC.VOD_GB = 'M'
+		</if>
+		<if test='search_tap.equals("youtube")'>
+		AND TC.VOD_GB = 'Y'
+		</if>
+	</if>
+	<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isSearch )">
+		<if test=' search_type.equals("all") '>
+		AND (
+			TC.CONTENTS_SEQ LIKE CONCAT( '%', #{search_text} ,'%' )
+			OR
+			TC.CONTENTS_NM LIKE CONCAT( '%', #{search_text} ,'%' )
+			OR
+			TU.USER_NAME LIKE CONCAT( '%', #{search_text} ,'%' )
+		)
+		</if>
+		<if test=' search_type.equals("VN") '>
+		AND TC.CONTENTS_NM LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("VR") '>
+		AND TU.USER_NAME LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+	</if>
+		GROUP BY
+			TC.CONTENTS_SEQ
+		ORDER BY
+			REG_DTS DESC
+		<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isPaging )">
+		/* 페이징 처리 */
+		LIMIT #{start} , #{length}
+		</if>
+	</select>
+	
+	<insert id="insertContents" parameterType="egovframework.work.course.model.Contents"
+			useGeneratedKeys="true" keyProperty="contents_seq">
+		/* ContentsManageMapper.insertContents */
+		INSERT INTO TB_CONTENTS (
+			CONTENTS_NM
+			, CONTENTS_DESCR
+			, VOD_GB
+			<if test=' vod_gb.equals("O") '>
+				, VOD_URL
+			</if>
+			<if test=' vod_gb.equals("Y") '>
+				, VOD_URL
+				, VOD_TIME_SEC
+			</if>
+			<if test=' vod_gb.equals("M") '>
+				, WIDTH_SIZE
+				, HEIGHT_SIZE
+				, VOD_TIME_SEC
+			</if>
+			, USE_YN
+			, REG_USER
+			, UPD_USER
+		) VALUES (
+			#{contents_nm}
+			, #{contents_descr}
+			, #{vod_gb}
+			<if test=' vod_gb.equals("O") '>
+				, #{vod_url}
+			</if>
+			<if test=' vod_gb.equals("Y") '>
+				, #{vod_url}
+				, #{vod_time_sec}
+			</if>
+			<if test=' vod_gb.equals("M") '>
+				, #{width_size}
+				, #{height_size}
+				, #{vod_time_sec}
+			</if>
+			, #{use_yn}
+			, #{reg_user}
+			, #{reg_user}
+		)
+	</insert>
+	
+	<select id="getContents" parameterType="java.lang.Integer" resultType="egovframework.work.course.model.Contents">
+		/* ContentsManageMapper.getContents */
+		SELECT
+			TC.CONTENTS_SEQ
+			, TC.CONTENTS_NM
+			, TC.CONTENTS_DESCR
+			, TC.VOD_GB
+			, TC.VOD_URL
+			, TC.WIDTH_SIZE
+			, TC.HEIGHT_SIZE
+			, TC.VOD_TIME_SEC
+			, TC.USE_YN
+			, TC.REG_DTS
+			, TC.REG_USER
+			, TU1.USER_NAME AS REG_USER_NM
+			, TC.UPD_DTS
+			, TC.UPD_USER
+			, TU2.USER_NAME AS UPD_USER_NM
+		FROM
+			TB_CONTENTS TC
+		INNER JOIN
+			TS_USER_INFO TU1
+		ON TU1.USER_ID = REG_USER
+		INNER JOIN
+			TS_USER_INFO TU2
+		ON TU2.USER_ID = UPD_USER
+		WHERE
+			1=1
+		AND
+			TC.CONTENTS_SEQ = #{contents_seq}
+	</select>
+	
+	<update id="updateContents" parameterType="egovframework.work.course.model.Contents">
+		/* ContentsManageMapper.updateContents */
+		UPDATE 
+			TB_CONTENTS
+		SET
+			CONTENTS_NM = #{contents_nm}
+			, CONTENTS_DESCR = #{contents_descr}
+			<if test='!vod_gb.equals("")'>
+				, VOD_GB = #{vod_gb}
+			</if>
+			, VOD_URL = #{vod_url}
+			, WIDTH_SIZE = #{width_size}
+			, HEIGHT_SIZE = #{height_size}
+			, VOD_TIME_SEC = #{vod_time_sec}
+			, USE_YN = #{use_yn}
+			, UPD_DTS = sysdate()
+			, UPD_USER = #{upd_user}
+		WHERE
+			CONTENTS_SEQ = #{contents_seq}
+	</update>
+	
+	<update id="deleteContents" parameterType="egovframework.work.course.model.Contents">
+		/* ContentsManageMapper.deleteContents */
+		UPDATE 
+			TB_CONTENTS
+		SET
+			DEL_YN = 'Y'
+			, USE_YN = 'N'
+			, UPD_DTS = sysdate()
+			, UPD_USER = #{upd_user}
+		WHERE
+			CONTENTS_SEQ = #{contents_seq}
+	</update>
+	
+	<select id="checkFile" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+		/* ContentsManageMapper.checkFile */
+		SELECT
+			COUNT(FILE_SEQ)
+		FROM
+			TS_CMMN_ATTACH_FILE
+		WHERE
+			1=1
+		AND
+			FILE_REG_GB = #{file_reg_gb}
+		AND
+			TAR_INFO_PK = #{target_seq}
+		AND
+			DEL_YN = 'N'
+	</select>
+	
+	<select id="getActivatedCourseList" parameterType="java.lang.Integer" resultType="java.util.Map">
+		/* ContentsManageMapper.getActivatedCourseList */
+		SELECT
+			tcs.course_seq
+			, tcs.course_nm
+			, tc.contents_nm
+		FROM
+			TB_COURSE TCS
+		INNER JOIN
+			TB_CONTENTS_MAPPED TCM
+		ON	TCM.COURSE_SEQ = TCS.COURSE_SEQ
+		AND TCM.DEL_YN = 'N'
+		INNER JOIN
+			TB_CONTENTS TC
+		ON	TC.CONTENTS_SEQ = TCM.CONTENTS_SEQ 
+		WHERE
+			1=1
+		AND
+			TCS.DEL_YN = 'N'
+		AND
+			TCS.USE_YN = 'Y'
+		AND
+			TCM.CONTENTS_SEQ = #{contents_seq}
+	</select>
+	
+	<select id="getDeleteCourseList" parameterType="java.lang.Integer" resultType="java.util.Map">
+		/* ContentsManageMapper.getDeleteCourseList */
+		SELECT
+			tcs.course_seq
+		    , tcm.contents_mapped_seq
+		    , tcs.course_round
+		FROM
+			TB_COURSE TCS
+		LEFT JOIN
+			TB_CONTENTS_MAPPED TCM
+		ON	TCM.COURSE_SEQ = TCS.COURSE_SEQ
+		AND TCM.DEL_YN = 'N'
+		INNER JOIN
+			TB_CONTENTS TC
+		ON	TC.CONTENTS_SEQ = TCM.CONTENTS_SEQ
+		WHERE
+			1=1
+		AND
+			TCS.DEL_YN = 'N'
+		AND
+			TCS.USE_YN = 'N'
+		AND
+			TCM.CONTENTS_SEQ = #{contents_seq}
+	</select>
+	
+	<select id="getMappedCourseList" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		/* ContentsManageMapper.getMappedCourseList */
+		SELECT
+			count(tcs.course_seq)
+		FROM
+			TB_COURSE TCS
+		LEFT JOIN
+			TB_CONTENTS_MAPPED TCM
+		ON	TCM.COURSE_SEQ = TCS.COURSE_SEQ
+		AND TCM.DEL_YN = 'N'
+		INNER JOIN
+			TB_CONTENTS TC
+		ON	TC.CONTENTS_SEQ = TCM.CONTENTS_SEQ
+		WHERE
+			1=1
+		AND
+			TCS.DEL_YN = 'N'
+		AND
+			TCM.CONTENTS_SEQ = #{contents_seq}
+	</select>
+	
+	<update id="deleteContentsMapped" parameterType="java.util.HashMap">
+		/* ContentsManageMapper.deleteContentsMapped */
+		UPDATE
+			TB_CONTENTS_MAPPED
+		SET
+			DEL_YN = 'Y'
+			, ROUND_SORT_NO = 0
+		    , UPD_DTS = sysdate()
+			, UPD_USER = #{upd_user}
+		WHERE
+			CONTENTS_MAPPED_SEQ = #{contents_mapped_seq}
+	</update>
+	
+	<update id="deleteCourse" parameterType="java.util.HashMap">
+		/* ContentsManageMapper.deleteCourse */
+		UPDATE
+			TB_COURSE
+		SET
+			DEL_YN = 'Y'
+		    , DISPLAY_YN = 'N'
+		    , UPD_DTS = sysdate()
+			, UPD_USER = #{upd_user}
+		WHERE
+			COURSE_SEQ = #{course_seq}
+	</update>
+	
+	<update id="updateCourseRound" parameterType="java.util.HashMap">
+		/* ContentsManageMapper.updateCourseRound */
+		UPDATE
+			TB_COURSE
+		SET
+			COURSE_ROUND = (COURSE_ROUND-1)
+		    , UPD_DTS = sysdate()
+			, UPD_USER = #{upd_user}
+		WHERE
+			COURSE_SEQ = #{course_seq}
+	</update>
+
+</mapper>

@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.work.notice.mapper.KotechNoticeMapper">
+
+		<insert id="insertNotice" parameterType="egovframework.work.notice.model.Notice" useGeneratedKeys="true" keyProperty="notice_seq">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.insertNotice */
+		INSERT INTO tb_notice_bbs (
+			notice_gb,
+			title,
+			contents,
+			top_fixed_yn,
+			fix_sort_no,
+			information_state,
+			display_yn,
+			del_yn,
+			hits,
+			reg_user
+		)
+		VALUES (
+			#{notice_gb},
+			#{title},
+			#{contents},
+			<choose>
+				<when test='top_fixed_yn eq "Y"'>
+					'Y',
+					( SELECT	
+						max(AA.fix_sort_no)+1 
+					  from (       
+							SELECT 
+								(Select (@rownum := @rownum + 1)) as No,
+								notice_seq,
+								notice_gb,
+								title,
+								contents,
+								top_fixed_yn,
+								fix_sort_no,
+								information_state,
+								hits,
+								display_yn,
+								reg_user,
+								upd_user
+							FROM TB_NOTICE_BBS  A 
+							WHERE TOP_FIXED_YN = 'Y'
+							AND A.del_yn = 'N' ORDER BY notice_seq DESC
+							) AA, (select @rownum := 0) dummy
+					),
+				</when>
+				<otherwise>
+					'N',
+					null,
+				</otherwise>
+			</choose>
+			#{information_state},
+			#{display_yn},
+			'N',
+			0,
+			#{reg_user}
+		)
+	</insert>
+	
+	
+	
+	<select id="getTotalCount" parameterType="egovframework.work.notice.model.Notice" resultType="java.lang.Integer">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.getTotalCount */
+		SELECT count(*) FROM TB_NOTICE_BBS 
+		WHERE del_yn = 'N'
+	</select>
+	
+	<select id="getFixedNoticeList2" parameterType="egovframework.work.notice.model.Notice" resultType="egovframework.work.notice.model.Notice">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.getFixedNoticeList2 */ 
+		 SELECT	AA.* from (       
+		SELECT 
+			(Select (@rownum := @rownum + 1)) as No,
+			notice_seq,
+			notice_gb,
+			title,
+			contents,
+			top_fixed_yn,
+            fix_sort_no,
+			information_state,
+			hits,
+			display_yn,
+			str_to_date(upd_dts,'%Y-%m-%d') upd_dts,
+			str_to_date(reg_dts,'%Y-%m-%d') reg_dts,
+			reg_user,
+			upd_user
+		FROM TB_NOTICE_BBS  A 
+        WHERE TOP_FIXED_YN = 'Y'
+		AND A.del_yn = 'N' ORDER BY notice_seq DESC) AA, (select @rownum := 0) dummy
+		ORDER BY fix_sort_no asc
+		LIMIT 3 
+	</select>
+	
+	<select id="getFixNoticeListCnt" parameterType="egovframework.work.notice.model.Notice" resultType="java.util.HashMap">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.getFixNoticeListCnt */
+		SELECT count(*) FROM TB_NOTICE_BBS
+		WHERE TOP_FIXED_YN = 'Y'
+		AND del_yn = 'N'
+		ORDER BY notice_seq DESC
+	</select>
+	
+	<select id="getNoticeList" parameterType="egovframework.work.notice.model.Notice" resultType="java.util.HashMap">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.getNoticeList */
+		SELECT * FROM TB_NOTICE_BBS
+		ORDER BY notice_seq DESC
+		WHERE del_yn = 'N'
+	</select>
+	
+	<select id="getNoticeGb" parameterType="egovframework.work.notice.model.Notice" resultType="java.util.HashMap">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.getNoticeGb */
+		SELECT 
+			code, code_nm
+		FROM TB_CODE 
+		WHERE group_code = 043 
+		AND use_yn ='Y'
+		AND code != '*'
+	</select>
+	
+	
+	<!--  -->
+	<select id="noticePagingTotalCount" parameterType="egovframework.work.notice.model.Notice" resultType="java.lang.Integer">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.noticePagingTotalCount */
+		SELECT
+			COUNT(*)
+		FROM TB_NOTICE_BBS A
+		WHERE 1=1
+		<if test='search_text != "" '>
+			AND A.title LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test='notice_gb == "1" '>
+			AND A.notice_gb = 1
+		</if>
+		<if test='notice_gb == "2" '>
+			AND A.notice_gb = 2
+		</if>
+		<if test='notice_gb == "" '>
+		
+		</if>
+		<choose>
+			<when test='display_yn eq "Y"'>
+				AND A.display_yn = 'Y'
+			</when>
+			<when test='display_yn eq "N"'>
+				AND A.display_yn = 'N'
+			</when>
+		</choose>
+		<choose>
+			<when test='information_state eq "Y"'>
+				AND A.information_state = 'Y'
+			</when>
+			<when test='information_state eq "N"'>
+				AND A.information_state = 'N'
+			</when>
+		</choose>
+		AND del_yn = 'N'
+	</select>
+	
+	
+	<select id="noticePagingPagedList" parameterType="egovframework.work.notice.model.Notice" resultType="egovframework.work.notice.model.Notice">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.noticePagingPagedList */
+		SELECT	AA.* from (
+		SELECT
+	    	(Select (@rownum := @rownum + 1)) as No,
+	    	A.notice_seq,
+	    	case 
+				when notice_gb = 1 then '공지사항' 
+                when notice_gb = 2 then '자료실'
+			else 0 end as notice_gb,
+	    	A.title,
+	    	ifnull(A.contents, '내용없음') as contents,
+	    	A.top_fixed_yn,
+	    	A.del_yn,
+	    	A.hits,
+	    	<!-- A.reg_dts, -->
+	    	DATE_FORMAT(A.reg_dts, <include refid="localThread.YYYY_MM_DD"/>) as reg_dts,
+	    	A.reg_user,
+	    	A.upd_user,
+	    	<!-- A.upd_user -->
+	    	DATE_FORMAT(A.upd_dts, <include refid="localThread.YYYY_MM_DD"/>) as upd_dts
+	    FROM TB_NOTICE_BBS  A ) AA, (select @rownum := 0) dummy
+	    WHERE 1=1
+	    <if test='search_text != "" '>
+			AND title LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test='notice_gb == "1" '>
+			AND notice_gb = '공지사항'
+		</if>
+		<if test='notice_gb == "2" '>
+			AND notice_gb = '자료실'
+		</if>
+		<if test='notice_gb == "" '>
+		
+		</if>
+		<choose>
+			<when test='display_yn eq "Y"'>
+				AND display_yn = 'Y'
+			</when>
+			<when test='display_yn eq "N"'>
+				AND display_yn = 'N'
+			</when>
+		</choose>
+		<choose>
+			<when test='information_state eq "Y"'>
+				AND information_state = 'Y'
+			</when>
+			<when test='information_state eq "N"'>
+				AND information_state = 'N'
+			</when>
+		</choose>
+		AND del_yn = 'N'
+		ORDER BY notice_seq DESC
+		<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isPaging )">
+		/* 페이징 처리 */
+		LIMIT #{start} , #{length}
+		</if>
+	</select>
+	
+	
+	
+	
+	<select id="getNotice" parameterType="java.util.HashMap" resultType="egovframework.work.notice.model.Notice">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.getNotice */
+		SELECT 
+			notice_seq,
+			notice_gb,
+			title,
+			contents,
+			top_fixed_yn,
+			information_state,
+			display_yn,
+			str_to_date(reg_dts,'%Y-%m-%d') reg_dts
+		FROM
+			tb_notice_bbs
+		WHERE
+			notice_seq = #{notice_seq}
+		AND del_yn = 'N'
+	</select>
+	
+	
+	<update id="modifyNotice" parameterType="egovframework.work.notice.model.Notice">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.modifyNotice */
+		UPDATE
+			tb_notice_bbs
+		SET 		 
+			notice_gb = #{notice_gb},
+			title = #{title},
+			contents = #{contents},
+			<!-- top_fixed_yn =  -->
+			<choose>
+				<when test='top_fixed_yn eq "Y"'>
+					top_fixed_yn = 'Y',
+					fix_sort_no = ( SELECT	max(AA.fix_sort_no)+1 
+									from (       
+										SELECT 
+											(Select (@rownum := @rownum + 1)) as No,
+											notice_seq,
+											notice_gb,
+											title,
+											contents,
+											top_fixed_yn,
+								            fix_sort_no,
+											information_state,
+											hits,
+											display_yn,
+											reg_user,
+											upd_user
+										FROM TB_NOTICE_BBS  A 
+								        WHERE TOP_FIXED_YN = 'Y'
+										AND A.del_yn = 'N' ORDER BY notice_seq DESC) AA, (select @rownum := 0) dummy),
+				</when>
+				<otherwise>
+					top_fixed_yn = 'N',
+				</otherwise>
+			</choose>
+			information_state = #{information_state},
+			display_yn = #{display_yn},
+			upd_dts = sysdate(),
+			upd_user = #{upd_user} 
+		WHERE
+			notice_seq = #{notice_seq}
+	</update>
+	
+	<select id="getNoticeFileSeq" parameterType="egovframework.work.notice.model.Notice" resultType="java.util.HashMap">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.getNoticeFileSeq */
+		SELECT file_seq FROM TS_CMMN_ATTACH_FILE
+			WHERE tar_info_pk = #{notice_seq}
+	</select>
+
+
+
+	<update id="deleteNotice" parameterType="java.util.HashMap">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.deleteNotice */
+		UPDATE
+			tb_notice_bbs
+		SET 		 
+			del_yn = 'Y',
+			top_fixed_yn = 'N',
+			fix_sort_no = '',
+			upd_dts = sysdate(),
+			upd_user = #{upd_user}
+		WHERE
+			notice_seq = #{notice_seq}
+	</update>
+	
+	
+	<update id="search_count_increase" parameterType="int">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.search_count_increase */
+		update TB_NOTICE_BBS
+		set hits = hits +1
+		where notice_seq = #{notice_seq}
+	</update>
+	
+	
+	
+	<select id="selectNoticeDetail" parameterType="int" resultType="egovframework.work.notice.model.Notice">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.selectNoticeDetail */
+		
+		SELECT * FROM(
+			SELECT 
+			    	notice_seq,
+			    	title,
+			        <!-- <![CDATA[
+				    	REGEXP_REPLACE(contents, '&lt(;)?(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?&gt(;)?', '') as contents,
+				    ]]> -->
+				    contents,
+			        reg_user,
+			        hits,
+			        DATE_FORMAT(reg_dts, <include refid="localThread.YYYY_MM_DD"/>) as reg_dts,
+			        DATE_FORMAT(upd_dts, <include refid="localThread.YYYY_MM_DD"/>) as upd_dts,
+			        upd_user,
+			        del_yn,
+			        LAG(notice_seq, 1, 0) OVER(ORDER BY notice_seq ASC) AS prev_seq,
+			    	LAG(title, 1, '이전글이 없습니다') OVER (ORDER BY notice_seq) AS prev_title,
+			    	LEAD(notice_seq, 1, 0) OVER(ORDER BY notice_seq ASC) AS next_seq,
+					LEAD(title, 1, '다음글이 없습니다') OVER (ORDER BY notice_seq) AS next_title
+			FROM common.tb_notice_bbs
+			where del_yn = 'N'
+			) as AA
+		WHERE 1=1
+		AND del_yn = 'N'
+		AND notice_seq = #{notice_seq}
+		ORDER BY notice_seq
+	</select>
+	
+	
+	<select id="maxNoticeSeq" parameterType="int" resultType="java.lang.Integer">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.maxNoticeSeq */
+		
+		SELECT  MAX(notice_seq) as MAX FROM TB_NOTICE_BBS
+			WHERE 1=1
+			AND del_yn = 'N'
+	</select>
+	
+	<select id="minNoticeSeq" parameterType="int" resultType="java.lang.Integer">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.minNoticeSeq */
+		
+		SELECT  MIN(notice_seq) as MIN FROM TB_NOTICE_BBS
+			WHERE 1=1
+			AND del_yn = 'N'
+	</select>
+	
+	
+	
+	<select id="getSideNoticeList" parameterType="egovframework.work.notice.model.Notice" resultType="egovframework.work.notice.model.Notice">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.getSideNoticeList */
+		SELECT	AA.* from (       
+			SELECT 
+				(Select (@rownum := @rownum + 1)) as sort,
+				notice_seq,
+				notice_gb,
+				title,
+				contents,
+				top_fixed_yn,
+	            fix_sort_no,
+				information_state,
+				hits,
+				display_yn,
+				str_to_date(upd_dts,'%Y-%m-%d') upd_dts,
+				str_to_date(reg_dts,'%Y-%m-%d') reg_dts,
+				reg_user,
+				upd_user
+			FROM TB_NOTICE_BBS  A 
+       		WHERE TOP_FIXED_YN = 'Y'
+			AND A.del_yn = 'N' ORDER BY notice_seq DESC) AA, (select @rownum := 0) dummy
+			ORDER BY fix_sort_no asc
+	</select>
+
+
+	<update id="deleteFixNotice" parameterType="java.util.HashMap">
+		/* com.bf.work.board.notice.mapper.BoardNoticeMapper.deleteFixNotice */
+		UPDATE
+			tb_notice_bbs
+		SET 		 
+			top_fixed_yn = 'N',
+			upd_dts = sysdate(),
+			fix_sort_no = '',
+			upd_user = #{upd_user}
+		WHERE
+			notice_seq = #{notice_seq}
+	</update>
+	
+	<update id="updateSort" parameterType="egovframework.work.notice.model.Notice">
+			/* com.bf.work.board.notice.mapper.BoardNoticeMapper.updateSort */
+			UPDATE
+				tb_notice_bbs
+			SET 		 
+				upd_dts = sysdate(),
+				upd_user = #{upd_user},
+				fix_sort_no = #{sort}
+			WHERE
+				notice_seq = #{notice_seq}
+	</update>
+	
+	<update id="sortInit" parameterType="egovframework.work.notice.model.Notice">
+			/* com.bf.work.board.notice.mapper.BoardNoticeMapper.sortInit */
+			UPDATE
+				tb_notice_bbs
+			SET 		 
+				fix_sort_no = ''
+			WHERE
+				notice_seq = #{notice_seq}
+	</update>
+	
+	<select id="fixCnt" parameterType="egovframework.work.notice.model.Notice" resultType="java.lang.Integer">
+		SELECT count(*) FROM tb_notice_bbs
+		WHERE top_fixed_yn = 'Y'
+		AND del_yn = 'N'
+	</select>
+	
+	
+
+</mapper>

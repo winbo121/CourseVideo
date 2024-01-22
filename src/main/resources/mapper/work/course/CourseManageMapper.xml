@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.work.course.mapper.CourseManageMapper">
+
+
+
+	<select id="getCourseTotalCount" parameterType="egovframework.work.course.model.CourseSearch"
+										  resultType="java.lang.Integer">
+		/* CourseManageMapper.getCourseTotalCount */
+		SELECT
+			COUNT(TC.COURSE_SEQ)
+		FROM
+			(
+				SELECT A.*
+				FROM TB_COURSE A
+				WHERE 1 = 1
+				AND A.DEL_YN = 'N'
+			) TC
+		LEFT JOIN
+			TS_CMMN_ATTACH_FILE TCAF
+		ON TC.COURSE_SEQ = TCAF.TAR_INFO_PK
+		AND FILE_REG_GB = 'TB_COURSE_THUMBNAIL'
+		AND TCAF.DEL_YN = 'N'
+        LEFT JOIN
+          (SELECT 
+          	A.COURSE_SEQ,
+          	COUNT(A.CONTENTS_SEQ) CNT, 
+          	SUM(B.VOD_TIME_SEC) TIME 
+           FROM TB_CONTENTS_MAPPED A, TB_CONTENTS B
+           WHERE A.CONTENTS_SEQ = B.CONTENTS_SEQ
+           AND A.DEL_YN = 'N'
+           AND B.USE_YN = 'Y'
+           AND B.DEL_YN = 'N'
+           GROUP BY A.COURSE_SEQ
+           ) TMP
+        ON TC.COURSE_SEQ = TMP.COURSE_SEQ
+        WHERE 1=1
+        AND 
+        	EXISTS (SELECT 1 FROM TS_USER_INFO WHERE ROLE_TYPE = 'ROLE_ADMIN' AND USER_ID = <include refid="localThread.LOGIN_ID"/>)
+    <if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty(search_tap)">
+		<if test='search_tap.equals("opened")'>
+		AND TC.USE_YN = 'Y'
+		</if>
+		<if test='search_tap.equals("temp")'>
+		AND TC.USE_YN = 'N'
+		</if>
+		<if test='search_tap.equals("closed")'>
+		AND TC.DEL_YN = 'Y'
+		</if>
+	</if>
+	<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isSearch )">
+		<if test=' search_type.equals("all") '>
+		AND (
+			TC.COURSE_NM LIKE CONCAT( '%', #{search_text} ,'%' )
+			OR
+			TC.COURSE_DESCR LIKE CONCAT( '%', #{search_text} ,'%' )
+		)
+		</if>
+		<if test=' search_type.equals("name") '>
+		AND TC.COURSE_NM LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("descr") '>
+		AND TC.COURSE_DESCR LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+	</if>
+
+	</select>
+
+
+	<select id="getCourseJspPagedList" parameterType="egovframework.work.course.model.CourseSearch"
+										  resultType="java.util.Map">
+		/* CourseManageMapper.getCourseJspPagedList */
+		SELECT
+			 TC.COURSE_SEQ as courseSeq
+			,ifnull(TC.COURSE_NM,"-") as courseNm
+			,TMP.COURSE_CNT as courseCnt
+            ,TMP.COURSE_TM as courseTm
+            ,ifnull(TC.INSTRUCTOR_NM,"-") as instructorNm
+            ,ifnull(TC.REG_INST_NM,"-") as regInstNm
+			,ifnull(CONVERT(TC.COURSE_DESCR USING utf8),"") as courseDescr
+			,TC.CATEGORY_SEQ as categorySeq
+			,TC.COURSE_ROUND as courseRound
+			,TC.DISPLAY_YN as displayYn
+			,TC.START_DTS as startDts
+			,TC.END_DTS as endDts
+			,TC.DISPLAY_YN AS displayYn
+			,TC.USE_YN AS useYn
+			,TC.DEL_YN AS delYn
+			,TCAF.ORGIN_FILENM as orginFileNm
+			,TCAF.SAVE_FILENM as saveFileNm
+			,TCAF.FILE_SAVE_PATH as fileSavePath
+			,TCAF.FILE_EXT as fileExt
+			,TCAF.FILE_SIZE as fileSize
+			,(select code_nm from tb_code where group_code = 301 and code_seq = tc.category_seq) as categoryNm
+			,(select code_nm from tb_code where group_code = 213 and code_seq = tc.type_seq) as typeNm
+			,case
+ 				when use_yn = 'Y' then '운영중'
+ 				when use_yn = 'N' then '임시'
+ 			 	else '-'
+ 			 end as status
+		FROM
+			(
+				SELECT A.*
+				FROM TB_COURSE A
+				WHERE 1 = 1
+				AND A.DEL_YN = 'N'
+			) TC
+		LEFT JOIN
+			TS_CMMN_ATTACH_FILE TCAF
+		ON TC.COURSE_SEQ = TCAF.TAR_INFO_PK
+		AND FILE_REG_GB = 'TB_COURSE_THUMBNAIL'
+		AND TCAF.DEL_YN = 'N'
+        LEFT JOIN
+          (
+          SELECT 
+          	A.COURSE_SEQ
+          	, COUNT(A.CONTENTS_SEQ) COURSE_CNT
+          	, SUM(B.VOD_TIME_SEC) COURSE_TM
+          FROM TB_CONTENTS_MAPPED A, TB_CONTENTS B
+          WHERE A.CONTENTS_SEQ = B.CONTENTS_SEQ
+          AND A.DEL_YN = 'N'
+          AND B.USE_YN = 'Y'
+          AND B.DEL_YN = 'N'
+          GROUP BY A.COURSE_SEQ
+          ) TMP
+        ON TC.COURSE_SEQ = TMP.COURSE_SEQ
+        WHERE 1=1
+        AND 
+			EXISTS (SELECT 1 FROM TS_USER_INFO WHERE ROLE_TYPE = 'ROLE_ADMIN' AND USER_ID = <include refid="localThread.LOGIN_ID"/>)
+    <if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty(search_tap)">
+		<if test='search_tap.equals("opened")'>
+		AND TC.USE_YN = 'Y'
+		</if>
+		<if test='search_tap.equals("temp")'>
+		AND TC.USE_YN = 'N'
+		</if>
+		<if test='search_tap.equals("closed")'>
+		AND TC.DEL_YN = 'Y'
+		</if>
+	</if>
+	<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isSearch )">
+		<if test=' search_type.equals("all") '>
+		AND (
+			TC.COURSE_NM LIKE CONCAT( '%', #{search_text} ,'%' )
+			OR
+			TC.COURSE_DESCR LIKE CONCAT( '%', #{search_text} ,'%' )
+		)
+		</if>
+		<if test=' search_type.equals("name") '>
+		AND TC.COURSE_NM LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("descr") '>
+		AND TC.COURSE_DESCR LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+	</if>
+		ORDER BY
+			TC.COURSE_SEQ DESC
+	<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isPaging )">
+		/* 페이징 처리 */
+		LIMIT #{start} , #{length}
+	</if>
+	</select>
+	
+	<select id="getContentsTotalCount" parameterType="egovframework.work.course.model.ContentsSearch"
+										  resultType="java.lang.Integer">
+		/* ContentsManageMapper.getContentsTotalCount */
+		SELECT
+			COUNT(TC.CONTENTS_SEQ)
+		FROM
+			TB_CONTENTS TC
+		WHERE
+			1=1
+        AND
+        	EXISTS (SELECT 1 FROM TS_USER_INFO WHERE ROLE_TYPE = 'ROLE_ADMIN' AND USER_ID = <include refid="localThread.LOGIN_ID"/>)
+		AND
+			TC.DEL_YN = 'N'
+		AND 
+			TC.USE_YN = 'Y'
+	<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty(search_tap)">
+		AND TC.VOD_GB = (SELECT CODE FROM TB_CODE WHERE GROUP_CODE = 213 AND CODE_SEQ = #{search_tap})
+	</if>
+	<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isSearch )">
+		<if test=' search_type.equals("all") '>
+		AND (
+			TC.CONTENTS_NM LIKE CONCAT( '%', #{search_text} ,'%' )
+			OR
+			TC.CONTENTS_DESCR LIKE CONCAT( '%', #{search_text} ,'%' )
+		)
+		</if>
+		<if test=' search_type.equals("name") '>
+		AND TC.CONTENTS_NM LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("descr") '>
+		AND TC.CONTENTS_DESCR LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+	</if>
+
+	</select>
+
+
+	<select id="getContentsJspPagedList" parameterType="egovframework.work.course.model.ContentsSearch"
+										  resultType="java.util.Map">
+		/* ContentsManageMapper.getContentsJspPagedList */
+	    SELECT
+		    tc.contents_seq
+		    , tc.contents_nm
+		    , CONVERT(tc.contents_descr USING utf8) as contents_descr
+		    , tc.vod_gb 
+		    , ifnull(tc.vod_url,"-") as vod_url
+		    , ifnull(tc.width_size,"0") as width_size
+		    , ifnull(tc.height_size,"0") as height_size
+		    , ifnull(tc.vod_time_sec,"0") as vod_time_sec
+		    , tc.use_yn
+		    , tc.del_yn
+		    , date_format(tc.reg_dts, '%Y-%m-%d %T') as reg_dts
+		    , tc.reg_user
+		    , date_format(tc.upd_dts, '%Y-%m-%d %T') as upd_dts
+		    , tc.upd_user
+		FROM
+			TB_CONTENTS TC
+		WHERE
+			1=1
+        AND 
+        	EXISTS (SELECT 1 FROM TS_USER_INFO WHERE ROLE_TYPE = 'ROLE_ADMIN' AND USER_ID = <include refid="localThread.LOGIN_ID"/>)
+		AND
+			TC.DEL_YN = 'N'
+		AND 
+			TC.USE_YN = 'Y'
+	<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty(search_tap)">
+		AND TC.VOD_GB = (SELECT CODE FROM TB_CODE WHERE GROUP_CODE = 213 AND CODE_SEQ = #{search_tap})
+	</if>
+	<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isSearch )">
+		<if test=' search_type.equals("all") '>
+		AND (
+			TC.CONTENTS_NM LIKE CONCAT( '%', #{search_text} ,'%' )
+			OR
+			TC.CONTENTS_DESCR LIKE CONCAT( '%', #{search_text} ,'%' )
+		)
+		</if>
+		<if test=' search_type.equals("name") '>
+		AND TC.CONTENTS_NM LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("descr") '>
+		AND TC.CONTENTS_DESCR LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+	</if>
+		ORDER BY 
+			TC.CONTENTS_SEQ DESC /* [필수] MASTER TABLE 에 대한 소팅 (DB NOT NULL 컬럼에 걸것) */
+
+		<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isPaging )">
+		/* 페이징 처리 */
+		LIMIT #{start} , #{length}
+		</if>
+	</select>
+	
+	<insert id="insertCourse" parameterType="egovframework.work.course.model.Course"
+			useGeneratedKeys="true" keyProperty="course_seq">
+		/* CourseManageMapper.insertCourse */
+		INSERT INTO tb_course
+		(
+		course_nm,
+		course_subject,
+		category_seq,
+		instructor_nm,
+		reg_inst_nm,
+		course_descr,
+		type_seq,
+		course_round,
+		display_yn,
+		reg_user,
+		upd_user
+		)
+		VALUES
+		(
+		#{course_nm},
+		#{course_subject},
+		#{category_seq},
+		#{instructor_nm},
+		#{reg_inst_nm},
+		#{course_descr},
+		#{type_seq},
+		#{course_round},
+		'Y',
+		<include refid="localThread.LOGIN_ID"/>,
+		<include refid="localThread.LOGIN_ID"/>
+		)
+	</insert>
+	
+	<insert id="updateCourse" parameterType="egovframework.work.course.model.Course">
+		/* CourseManageMapper.updateCourse */
+		UPDATE tb_course
+		SET 
+			course_nm = #{course_nm},
+			course_subject = #{course_subject},
+			category_seq = #{category_seq},
+			instructor_nm = #{instructor_nm},
+			reg_inst_nm = #{reg_inst_nm},
+			course_descr = #{course_descr},
+			type_seq=#{type_seq},
+			course_round = #{course_round},
+			upd_dts = sysdate(),
+			upd_user = <include refid="localThread.LOGIN_ID"/>
+		WHERE
+			course_seq = #{course_seq}
+		AND
+			del_yn = 'N'
+	</insert>
+	
+	<update id="changeCourse" parameterType="egovframework.work.course.model.Course">
+		/* courseManagerMapper.changeCourse */
+		UPDATE tb_course
+		SET 
+			use_yn = #{use_yn},
+			upd_dts = sysdate(),
+			upd_user = <include refid="localThread.LOGIN_ID"/>
+		WHERE
+			course_seq = #{course_seq}
+		AND
+			del_yn = 'N'
+	</update>
+	
+	<update id="deleteCourse" parameterType="egovframework.work.course.model.Course">
+		/* CourseManageMapper.deleteCourse */
+		UPDATE 
+			TB_COURSE
+ 		SET
+			  DISPLAY_YN = 'N'
+			, USE_YN = 'N'
+			, DEL_YN = 'Y'
+			, UPD_DTS = sysdate()
+			, UPD_USER = <include refid="localThread.LOGIN_ID"/>
+		WHERE
+			COURSE_SEQ = #{course_seq}
+		AND
+			del_yn = 'N'
+	</update>
+	
+	<select id="selectCourseContentsMapped" resultType="java.lang.Integer">
+		/* CourseManagerMapper.selectCourseContentsMapped */
+		SELECT
+			COUNT(*)
+		FROM tb_contents_mapped
+		WHERE DEL_YN = 'N'
+		AND COURSE_SEQ = #{course_seq}
+		AND CONTENTS_sEQ = #{contents_seq}
+	</select>
+	
+	<insert id="insertCourseContentsMapped">
+		/* CourseManagerMapper.insertCourseContentsMapped */
+		INSERT INTO tb_contents_mapped
+		(
+		course_seq,
+		contents_seq,
+		round_sort_no,
+		reg_dts,
+		reg_user,
+		upd_user
+		)
+		VALUES
+		(
+		#{course_seq},
+		#{contents_seq},
+		#{round_sort_no},
+		sysdate(),
+		<include refid="localThread.LOGIN_ID"/>,
+		<include refid="localThread.LOGIN_ID"/>
+		)
+	</insert>
+	
+	<update id="updateCourseContentsMapped">
+		/* CourseManagerMapper.updateCourseContentsMapped */
+		UPDATE tb_contents_mapped
+		SET
+			 ROUND_SORT_NO = #{round_sort_no}
+			,UPD_DTS = SYSDATE()
+			,UPD_USER = <include refid="localThread.LOGIN_ID"/>
+		WHERE
+			COURSE_SEQ = #{course_seq}
+		AND
+			CONTENTS_SEQ = #{contents_seq}
+		AND 
+			DEL_YN = 'N'
+	</update>
+	
+	<update id="deleteCourseContentsMapped">
+		/* CourseManagerMapper.deleteCourseContentsMapped */
+		UPDATE tb_contents_mapped
+		SET
+			  DEL_YN = 'Y'
+			 ,ROUND_SORT_NO = 0
+			 ,UPD_DTS = SYSDATE()
+			 ,UPD_USER = <include refid="localThread.LOGIN_ID"/>
+		WHERE 
+			COURSE_SEQ = #{course_seq}
+		AND 
+			DEL_YN = 'N'
+		AND 
+			CONTENTS_SEQ NOT IN
+			<foreach collection="get_contents_seqs" item="contents_seq" open="(" close=")" separator="," index="index">
+				#{contents_seq}
+			</foreach>
+	</update>
+	
+	<select id="getCourse" parameterType="java.lang.Integer" resultType="egovframework.work.course.model.Course">
+		/* courseManageMapper.getCourse */
+		select tc.*
+		from tb_course tc
+		where course_seq = #{course_seq}
+		and del_yn = 'N'
+	</select>
+	
+	<select id="getContents" parameterType="java.lang.Integer" resultType="egovframework.work.course.model.Contents">
+		/* courseManageMapper.getContents */
+		select 
+			 tcs.contents_seq
+            ,tcs.contents_nm
+            ,CONVERT(tcs.contents_descr USING utf8) as contents_descr
+            ,tcs.vod_gb
+            ,ifnull(tcs.vod_url,"-") as vod_url
+            ,ifnull(tcs.width_size,"0") as width_size
+            ,ifnull(tcs.height_size,"0") as height_size
+            ,ifnull(tcs.vod_time_sec,"0") as vod_time_sec
+            ,tcs.use_yn
+            ,tcs.del_yn
+            ,tcs.reg_dts
+            ,tcs.reg_user
+            ,tcs.upd_dts
+            ,tcs.upd_user
+		from tb_contents tcs, tb_contents_mapped tcm
+        where tcs.contents_seq = tcm.contents_seq
+        and tcm.course_seq = #{course_seq}
+        and tcm.del_yn = 'N'
+        and tcs.use_yn = 'Y'
+        and tcs.del_yn = 'N'
+        order by tcm.round_sort_no
+	</select>
+	
+	<select id="getCategoryCode"  resultType="java.util.Map">
+		/* courseManagerMapper.getCategoryCode */
+		SELECT 
+			*
+		FROM TB_CODE
+		WHERE GROUP_CODE = 301
+		AND USE_YN = 'Y'
+		ORDER BY CODE_SEQ
+	</select>
+	
+	<select id="getTypeCode"  resultType="java.util.Map">
+		/* courseManagerMapper.getTypeCode */
+		SELECT 
+			*
+		FROM TB_CODE
+		WHERE GROUP_CODE = 213
+		AND USE_YN = 'Y'
+		ORDER BY CODE_SEQ
+	</select>
+
+</mapper>

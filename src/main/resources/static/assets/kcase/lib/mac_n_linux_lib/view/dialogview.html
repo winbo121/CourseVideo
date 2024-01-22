@@ -1,0 +1,432 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>KSign-로그인 창</title>
+    <meta content="text/html; charset=UTF-8" />
+</head>
+<body>
+
+<!-- 인증서 로그인 다이얼로그 -->
+<div id="kc_dialog_default" class="kc-dialog" title="인증서 입력 (전자서명)">
+    <div class="kc-dialog-body">
+        <div id="" class="kc-legend">인증서 위치</div>
+        <div style="border-radius: 4px 4px 4px 4px; border: 1px solid rgb(128, 128, 128);">
+            <table id="kc_cert_position" cellpadding="0" cellspacing="0" class="kc-cert-position" style="width: 400px;">
+                <tr><td style="height:10px"></td></tr>
+                <tr>
+                    <td>
+                        <button type="button" title="하드디스크" class="kc-rbg-normal" style="cursor: pointer;">
+                            <span class="kc-ico-hdd"></span><span class="kc-rbg-text">하드디스크</span>
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" title="이동식디스크" class="kc-rbg-normal" style="cursor: pointer;">
+                            <span class="kc-dropdown-group kc-ico-removable"></span>
+                            <span class="kc-dropdown-group kc-rbg-text" style="letter-spacing: -2px !important;">이동식디스크</span>
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" title="레이어 열림 보안토큰" class="kc-rbg-normal" style="cursor: pointer;">
+                            <span class="kc-icon-hw-pkcs"></span><span class="kc-rbg-text">HW보안토큰</span>
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" title="휴대폰" class="kc-rbg-normal" style="cursor: pointer;">
+                            <span class="kc-ico-mobile"></span><span class="kc-rbg-text">휴대폰</span>
+                        </button>
+                    </td>
+                </tr>
+                <tr><td style="height:10px"></td></tr>
+            </table>
+        </div>
+<!--
+        <div id="kc_cert_type" class="kc-location-item2">
+            <table>
+                <tr>
+                    <td>
+                        인증서 용도
+                    </td>
+                    <td style="width:5px"></td>
+                    <td>
+                        <span class="select">
+                        <select id="insCltpCd" name="insCltpCd" title="" style="width:320px;">
+                            <option value="sign" selected="selected">서명용</option>
+                            <option value="enc">암호화용(키관리용)</option>
+                        </select>
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+-->
+        <div id="kc_cert_list" title="인증서 목록" class="kc-tableview" style="">
+            <table cellpadding="0" cellspacing="0" summary="구분, 사용자, 만료일, 발급자">
+                <colgroup><col width="92px"><col width="154px"><col width="72px"><col width="82px"></colgroup>
+                <thead>
+                <tr>
+                    <th scope="col" class="kc-mcert">
+                        <div class="wide-cert-table-resizearea">구분<div class="kc-tableview-resizer"></div></div>
+                    </th>
+                    <th scope="col" class="kc-mcert2">
+                        <div class="wide-cert-table-resizearea">사용자<div class="kc-tableview-resizer"></div></div>
+                    </th>
+                    <th scope="col" class="kc-mcert3">
+                        <div class="wide-cert-table-resizearea">만료일<div class="kc-tableview-resizer"></div></div>
+                    </th>
+                    <th scope="col" class="kc-mcert4">
+                        <div class="wide-cert-table-resizearea">발급자<div class="kc-tableview-resizer"></div></div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div id="kc_cert_ca" class="kc-location-item2 t_right paddT0 maT5Minus">
+<!--            <label for="">인증서 기관</label>
+                <span class="select">
+                    <select id="insCltpCd" name="insCltpCd" title="" style="width:150px;">
+                        <option value="0" selected="selected">전체</option>
+                        <option>케이사인[공인]</option>
+                        <option>한국정보인증[공인]</option>
+                        <option>한국증권전산[공인]</option>
+                        <option>금융결제원[공인]</option>
+                        <option>한국전자인증[공인]</option>
+                        <option>한국무역정보통신[공인]</option>
+                        <option>행정안전부[공인]</option>
+                        <option>교육과학기술부[공인]</option>
+                        <option>대검찰청[공인]</option>
+                    </select>
+                </span>
+                -->
+        </div>
+
+        <div id="kc_content_default" class="kc-content-box">
+            <table cellpadding="0" cellspacing="0" border="0">
+                <colgroup><col width="100"><col width="300"></colgroup>
+                <tbody>
+                <tr>
+                    <td>
+                        <button type="button" class="view">인증서 보기</button>
+                        <button type="button" class="view">인증서 검증</button>
+                        <button tabindex="3" type="button" class="view">인증서 삭제</button>
+                    </td>
+                    <td>
+                        <div name="" id="" class="kc-cert-passwd">
+                            <span>인증서 암호는 대소문자를 구분합니다.</span>
+                            <div class="kc-passwd-field" id="">
+                                <label class="kc-tit-pw">인증서 암호</label>
+                                <input type="password" class="kc-pw-box"><span class="kc-off"></span>
+                            </div>
+                            <div id="" class="kc-passwd-field">
+                                <span class="kc-bu"></span><span id="xwup_certselect_tek_guide_msg1">인증서 선택 후 암호를 입력하세요.</span><span id="xwup_certselect_tek_guide_msg2" style="display: none;">전자서명이 완료 되었습니다.</span>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="kc_content_admin" class="kc-content-box">
+            <button type="button" class="view w122">인증서 복사</button>
+            <button type="button" class="view w122">비밀번호 변경</button>
+            <button type="button" class="view w122">인증서 삭제</button>
+            <button type="button" class="view w122">가져오기/내보내기</button>
+            <button type="button" class="view w122">인증서 보기/검증</button>
+            <button type="button" class="view w122">제품정보</button>
+        </div>
+
+        <div class="kc-buttons-layout">
+            <button class="kc-btn-blue" id="" type="button">확인</button>
+            <button class="kc-btn-gray" id="" type="button">취소</button>
+        </div>
+    </div>
+</div>
+
+<!-- 보안토큰 다이얼로그 -->
+<div id="kc_dialog_pkcs11" class="kc-dialog" style="width: 400px; display:none;" title="보안토큰 구동프로그램 정보">
+    <div class="kc-dialog-body">
+        <div class="kc-tableview">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <th>
+                    보안토큰 구동프로그램 설치정보
+                </th>
+            </tr>
+        </table>
+        </div>
+        <div style="font-size:12px;margin-top:2px;margin-bottom:3px;">
+            <div>보안토큰을 선택하시고 확인 버튼을 눌러 주십시오.</div>
+            <div>만약, 사용하실 보안토큰이 선택항목에 없다면 구동프로그램 설치를 눌러 주십시오.</div>
+        </div>
+
+        <div class="kc-buttons-layout">
+            <button class="kc-btn-gray" type="button">구동프로그램 설치</button>
+            <button class="kc-btn-blue" type="button">확인</button>
+            <button class="kc-btn-gray" type="button">취소</button>
+        </div>
+    </div>
+</div>
+
+<!-- 인증서 보기 다이얼로그 -->
+<div id="kc_dialog_viewCert" class="kc-dialog" title="인증서 보기">
+    <div class="kc-dialog-body">
+        <div class="kc-tab-list">
+            <table>
+                <tr id="kc_viewverify_tablist">
+                    <td class="tabnav-selected">
+                        <a>일반</a>
+                    </td>
+                    <td class="tabnav-unselected">
+                        <a>자세히</a>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <div class="kc-tab-view">
+            <div id="kc_tab_common">
+                <div class="kc-mbottom"></div>
+                <textarea  rows="7" class="kc-textview" readonly=""></textarea>
+            </div>
+            <div id="kc_tab_detail">
+                <div class="kc-tableview" style="width: 373px; height: 274px">
+                    <table cellpadding="0" cellspacing="0">
+                        <colgroup><col width="120"><col width="203"></colgroup>
+                        <thead>
+                        <tr>
+                            <th class="filed-value">
+                                <div class="wide-cert-table-resizearea">필드<div class="xwup-tableview-resizer"></div></div>
+                            </th>
+                            <th class="value-end">
+                                <div class="wide-cert-table-resizearea">값<div class="xwup-tableview-resizer"></div></div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <textarea cols="20" rows="7" class="kc-textview2" readonly=""></textarea>
+            </div>
+        </div>
+        <div class="kc-buttons-layout">
+            <button class="kc-btn-gray" id="" type="button">취소</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- 인증서 저장매체 선택 -->
+<div id="kc_dialog_media" class="kc-dialog" style="width: 450px;display: none;" title="인증서 저장매체 선택">
+    <div class="kc-dialog-body">
+        <p class="t_center paddB10">인증서를 저장할 대상 저장매체를 선택하십시오.</p>
+        <div style="border-radius: 4px 4px 4px 4px; border: 1px solid rgb(128, 128, 128);">
+            <table cellpadding="0" cellspacing="0" class="kc-cert-position" style="width: 400px;">
+                <tr><td style="height:10px"></td></tr>
+                <tr>
+                    <td>
+                        <button type="button" title="하드디스크" class="kc-rbg-normal">
+                            <span class="kc-ico-hdd"></span><span class="kc-rbg-text">하드디스크</span>
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" title="이동식디스크" class="kc-rbg-normal" style="cursor: pointer;">
+                            <span class="kc-dropdown-group kc-ico-removable"></span>
+                            <span class="kc-dropdown-group kc-rbg-text" style="letter-spacing: -2px !important;">이동식디스크</span>
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" title="레이어 열림 보안토큰" class="kc-rbg-normal" style="cursor: pointer;">
+                            <span class="kc-icon-hw-pkcs"></span><span class="kc-rbg-text">HW보안토큰</span>
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" title="휴대폰" class="kc-rbg-normal" style="cursor: pointer;">
+                            <span class="kc-ico-mobile"></span><span class="kc-rbg-text">휴대폰</span>
+                        </button>
+                    </td>
+                </tr>
+                <tr><td style="height:10px"></td></tr>
+            </table>
+        </div>
+
+        <div class="kc-buttons-layout">
+            <button class="kc-btn-blue" id="" type="button">확인</button>
+            <button class="kc-btn-gray" id="" type="button">취소</button>
+        </div>
+    </div>
+</div>
+
+<!--인증서 비밀번호 변경-->
+<div id="kc_dialog_changePw" class="kc-dialog" style="width: 450px;display: none;" title="인증서 비밀번호 변경">
+    <div class="kc-dialog-body">
+        <p class="paddB10">비밀번호를 입력하십시오.</p>
+        <ul class="pwList">
+            <li>
+                <div id="" class="tit_calc">현재 비밀번호</div>
+                <div class="form_calc">
+                    <input type="password" style="border: solid 1px black" title="인증서 암호" class="kc-pw-box tf_m">
+                </div>
+            </li>
+            <li>
+                <div id="" class="tit_calc">새로운 비밀번호</div>
+                <div class="form_calc">
+                    <input type="password" style="border: solid 1px black" title="인증서 암호" class="kc-pw-box tf_m">
+                </div>
+            </li>
+            <li>
+                <div id="" class="tit_calc">새로운 비밀번호 확인</div>
+                <div class="form_calc">
+                    <input type="password" style="border: solid 1px black" title="인증서 암호" class="kc-pw-box tf_m">
+                </div>
+            </li>
+        </ul>
+        <div class="kc-content-box fontNormal">
+            <p>인증서 비밀번호 변경 시 주의 및 권고사항</p>
+            <ul>
+                <li>*영문자와 숫자의 조합시 10자리 이상</li>
+                <li>*영문자와 숫자, 특수 문자의 조합시 8자리 이상</li>
+                <li>*영문자는 대/소문자 구분</li>
+                <li>*연속된 동일한 문자열 또는 숫자는 사용금지</li>
+            </ul>
+        </div>
+
+        <div class="kc-buttons-layout">
+            <button class="kc-btn-blue" id="" type="button">확인</button>
+            <button class="kc-btn-gray" id="" type="button">취소</button>
+        </div>
+    </div>
+</div>
+
+<!--인증서 가져오기/내보내기-->
+<div id="kc_dialog_pkcs12" class="kc-dialog" style="width: 450px;display: none;" title="인증서 가져오기/내보내기">
+    <div class="kc-dialog-body">
+        <div style="position: absolute;top:14%;left: 8%;background: white">인증서 형식 변환</div>
+        <div style="border-radius: 4px 4px 4px 4px; border: 1px solid rgb(128, 128, 128);">
+            <div class="rdaioSet">
+                <ul>
+                    <li><input type="radio" name="pkcs12menu" class="rdo" /> <label >인증서 내보내기 - PKCS#12(.PFX)</label></li>
+                    <li><input type="radio" name="pkcs12menu" checked="checked" class="rdo" /> <label>인증서 가져오기 - (.der,key, Capubs)</label></li>
+                </ul>
+            </div>
+        </div>
+        <div class="paddT10 paddB20">
+            <p class="paddB5">파일이름:</p>
+            <table><tr>
+                <td><input type="text" id="pkcs12_file_name" style="width:240px;border: solid 1px black"></td>
+                <td style="width:10px"></td>
+                <td><button id="pkcs12_file_btn" class="kc-btn-gray" type="button" style="width:100px;">찾아보기</button></td>
+            </tr></table>
+        </div>
+        <div>변경할 인증서 종류</div>
+        <div style="border-radius: 4px 4px 4px 4px; border: 1px solid rgb(128, 128, 128);">
+            <div class="rdaioSet t_center clfix">
+                <ul>
+                    <li class="maR10"><input type="radio" name="pkcs12Type" checked="checked" class="rdo"> <label for="">서명용</label></li>
+                    <li><input type="radio" name="pkcs12Type" class="rdo"> <label for="">키관리용</label></li>
+                </ul>
+            </div>
+        </div>
+        <br />
+        <div class="kc-buttons-layout">
+            <button class="kc-btn-blue" id="" type="button">확인</button>
+            <button class="kc-btn-gray" id="" type="button">취소</button>
+        </div>
+    </div>
+</div>
+
+<!--파일 탐색기-->
+<div id="kc_dialog_file" class="kc-dialog" style="display:none; margin:0px 0px 0" title="파일선택">
+    <div class="kc-dialog-body">
+        <div class="file-url">
+            <table>
+                <tr>
+                    <td style="padding-left: 70px">
+                        <button class="kc-btn-gray" style="width:90px" type="button">상위폴더</button>
+                    </td>
+                    <td style="width:17px;">
+                    </td>
+                    <td>
+                        <input type="text" readonly="readOnly" title="현재 경로 C:\Users\K\Documents" class="txt-url"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="kc-medialist">
+            <table cellpadding="0" cellspacing="0">
+            </table>
+        </div>
+        <div class="kc-filelist">
+            <table cellpadding="0" cellspacing="0">
+            </table>
+        </div>
+
+        <div class="filename-url">파일명 :<input title="파일명 :" readonly="readOnly" type="text" class="txt-nurl"></div>
+        <div class="kc-buttons-layout">
+            <button class="kc-btn-blue" id="" type="button">확인</button>
+            <button class="kc-btn-gray" id="" type="button">취소</button>
+        </div>
+    </div>
+</div>
+
+<!--이동식 디스크 드라이브 선택-->
+<div id="kc_dialog_drive" class="kc-dialog" style="display:none;" title="드라이브 선택">
+    <div class="kc-dialog-body">
+        <p class="">이동식 디스크를 선택하세요.</p>
+        <br/>
+        <label >드라이버 목록</label>
+        <span class="select" style="margin-left: 10px">
+			<select id="insCltpCd" name="insCltpCd" title="" style="width:215px;">
+            </select>
+        </span>
+        <div class="kc-buttons-layout">
+            <button class="kc-btn-blue" id="" type="button">확인</button>
+            <button class="kc-btn-gray" id="" type="button">취소</button>
+        </div>
+    </div>
+</div>
+
+<!--인증서 비밀번호 입력-->
+<div id="kc_dialog_pw" class="kc-dialog" style="display:none;" title="비밀번호 입력">
+    <div class="kc-dialog-body">
+        <p class="paddB10 t_center">인증서 비밀번호를 입력하십시오.</p>
+        <input type="password" title="인증서 암호" class="kc-pw-box" style="width:298px;border: solid 1px black">
+        <div class="kc-buttons-layout" style="text-align: center">
+            <button class="kc-btn-blue" type="button">확인</button>
+        </div>
+    </div>
+</div>
+
+<!--보안토큰 PIN 입력-->
+<div id="kc_dialog_pin" class="kc-dialog" style="width: 350px; display:none;" title="보안토큰 비밀번호 입력<">
+    <div class="kc-dialog-body">
+        <p class="paddB10 t_center">보안토큰 비밀번호를 입력하십시오.</p>
+        <input type="password" class="kc-pw-box maR5" style="width:203px;border: solid 1px black"><button class="kc-btn-gray" style="height:25px;" type="button">PIN 변경</button>
+        <div class="kc-buttons-layout">
+            <button class="kc-btn-blue" type="button">확인</button>
+            <button class="kc-btn-gray" type="button">취소</button>
+        </div>
+    </div>
+</div>
+
+<!--제품 정보-->
+<div id="kc_dialog_pInfo" class="kc-dialog" style="display:none;" title="제품 정보">
+    <div class="kc-dialog-body">
+        <div class="kc-content-box">
+            KSignCASE-Agent v1.0.0.0<br>Copyright 2015 KSIGN Co., Ltd. All rights reserved.
+        </div>
+        <div class="kc-buttons-layout" style="text-align: center">
+            <button class="kc-btn-gray" type="button">확인</button>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

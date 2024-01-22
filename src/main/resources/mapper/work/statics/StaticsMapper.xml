@@ -1,0 +1,983 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="egovframework.work.statistics.mapper.KotechStaticsMapper">
+
+
+
+
+	<select id="getJspTotalCount"
+		parameterType="egovframework.work.test.model.jsp.TestJspPagingSearch"
+		resultType="java.lang.Integer">
+		/* StaticsMapper.getJspTotalCount */
+		SELECT
+		count(X.log_seq)
+		from(
+		SELECT
+		A.log_seq,
+		IFNULL(b.user_name,'탈퇴자')as user_name,
+		(case
+		when
+		b.role_type =
+		'ROLE_ADMIN'
+		then '관리자'
+		when
+		b.role_type = 'ROLE_USER'
+		then
+		'사용자'
+		else
+		'권한없음'
+		end)as role_type,
+		A.user_id,
+		A.conn_ip,
+		date_format(A.conn_dt,
+		<include refid="localThread.YYYY_MM_DD_HH_MI_SS" />
+		) as conn_dt
+		FROM
+		ts_user_log A
+		left outer join ts_user_info B
+		on
+		A.user_id = B.user_id
+		order by a.conn_dt desc
+		)X
+		WHERE 1=1
+		<if test=' search_type.equals("user") '>
+			AND X.role_type = '사용자'
+		</if>
+		<if test=' search_type.equals("admin") '>
+			AND X.role_type = '관리자'
+		</if>
+		<if test=' !search_text.equals("") '>
+			AND X.user_id LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		
+	</select>
+
+	<select id="getJspPagedList"
+		parameterType="egovframework.work.test.model.jsp.TestJspPagingSearch"
+		resultType="java.util.Map">
+		/* StaticsMapper.getJspPagedList */
+		SELECT
+		X.* from(
+		SELECT
+		A.log_seq,
+		IFNULL(b.user_name,'탈퇴자')as user_name,
+		(case
+		when
+		b.role_type =
+		'ROLE_ADMIN'
+		then '관리자'
+		when
+		b.role_type = 'ROLE_USER'
+		then '사용자'
+		else
+		'권한없음'
+		end)as role_type,
+		A.user_id,
+		A.conn_ip,
+		date_format(A.conn_dt,
+		<include refid="localThread.YYYY_MM_DD_HH_MI_SS" />
+		) as conn_dt
+
+		FROM
+		ts_user_log A
+		left outer join ts_user_info B
+		on
+		A.user_id = B.user_id
+		order by a.conn_dt desc
+		)X
+		WHERE 1=1
+		<if test=' search_type.equals("user") '>
+			AND X.role_type = '사용자'
+		</if>
+		<if test=' search_type.equals("admin") '>
+			AND X.role_type = '관리자'
+		</if>
+		<if test=' !search_text.equals("") '>
+			AND X.user_id LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if
+			test="@org.apache.commons.lang3.BooleanUtils@isTrue( isPaging )">
+			/* 페이징 처리 */
+			LIMIT #{start} , #{length}
+		</if>
+	</select>
+	
+	<select id="getActiveRecordChart" parameterType="egovframework.work.statistics.model.StaticsPagingSearch" resultType="java.util.Map">
+		/* StaticsMapper.getActiveRecordChart */
+		SELECT c.* FROM ( 
+			SELECT 
+				ifnull(a.menu_seq, '메뉴등록안됨') AS menu_seq
+				,ifnull(b.menu_nm, '메뉴등록안됨') AS menu_nm 
+				,sum(a.sum_cnt) AS sum_cnt 
+				,sum(CASE WHEN a.time_on_page IS NULL THEN a.sum_cnt ELSE 0 END) AS 'time_on_page IS NULL' 
+				,sum(CASE WHEN a.time_on_page = 'IM' THEN a.sum_cnt ELSE 0 END) AS 'IM' 
+				,sum(CASE WHEN a.time_on_page = '30S' THEN a.sum_cnt ELSE 0 END) AS 'thirty_sec' 
+				,sum(CASE WHEN a.time_on_page = '3M' THEN a.sum_cnt ELSE 0 END)AS 'three_min' 
+				,sum(CASE WHEN a.time_on_page = '5M' THEN a.sum_cnt ELSE 0 END) AS 'five_min' 
+				,sum(CASE WHEN a.time_on_page = '10M' THEN a.sum_cnt ELSE 0 END)AS 'ten_min' 
+				,sum(CASE WHEN a.login_yn = 'Y' THEN a.sum_cnt ELSE 0 END) AS 'log_y_cnt' 
+				,sum(CASE WHEN a.login_yn = 'N' THEN a.sum_cnt ELSE 0 END)AS 'log_n_cnt' 
+				,sum(CASE WHEN a.conn_way = 'M' THEN a.sum_cnt ELSE 0 END) AS 'mobile' 
+				,sum(CASE WHEN a.conn_way = 'P' THEN a.sum_cnt ELSE 0 END)AS 'pc' 
+				,sum(CASE WHEN a.log_gb = '02' THEN a.sum_cnt ELSE 0 END) AS 'admin' 
+				,sum(CASE WHEN a.log_gb = '01' || a.log_gb ='03' THEN a.sum_cnt ELSE 0 END)AS 'user' 
+				, DATE_FORMAT(a.reg_dts, '%d') AS day
+			FROM tb_active_log a
+			JOIN ts_menu_info b ON a.conn_uri = b.conn_uri AND b.log_use_yn = 'Y'
+			WHERE 1=1 
+			<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( time_page )">
+				AND a.time_on_page = #{time_page}
+			</if>
+			<choose>
+				<when test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( search_date )">
+					<if test=' search_type.equals("day") '>
+						AND DATE_FORMAT(a.reg_dts, '%Y-%m-%d') = #{search_date}
+					</if>
+					<if test=' search_type.equals("month") '>
+						AND DATE_FORMAT(a.reg_dts, '%Y-%m') = #{search_date}
+					</if>
+					<if test=' search_type.equals("period") '>
+						AND a.reg_dts BETWEEN DATE(#{search_date}) and DATE(#{search_date_end})+1
+					</if>
+				</when>
+				<otherwise>
+					AND DATE_FORMAT(a.reg_dts, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+				</otherwise>
+			</choose>
+			GROUP BY menu_seq, menu_nm, day
+		) c
+	</select>
+
+	<select id="getActiveRecordTotalCount" parameterType="egovframework.work.statistics.model.StaticsPagingSearch" resultType="java.lang.Integer">
+		/* StaticsMapper.getActiveRecordTotalCount */
+		SELECT 
+		    COUNT(*)
+		FROM
+		    (
+		    SELECT c.*
+			FROM (
+				SELECT ifnull(b.menu_seq, '메뉴등록안됨') AS menu_seq
+					, ifnull(b.menu_nm, '메뉴등록안됨') AS menu_nm
+					,sum(CASE 
+							WHEN a.time_on_page IS NULL
+								THEN a.sum_cnt
+							ELSE 0
+							END) AS 'time_on_page IS NULL'
+					,sum(CASE 
+							WHEN a.time_on_page = 'IM'
+								THEN a.sum_cnt
+							ELSE 0
+							END) AS 'IM'
+					,sum(CASE 
+							WHEN a.time_on_page = '30S'
+								THEN a.sum_cnt
+							ELSE 0
+							END) AS 'thirty_sec' 
+					,sum(CASE
+							WHEN a.time_on_page = '3M'
+							THEN a.sum_cnt
+							ELSE 0
+							END)AS 'three_min'
+					,sum(CASE 
+							WHEN a.time_on_page = '5M'
+								THEN a.sum_cnt
+							ELSE 0
+							END) AS 'five_min' 
+					,sum(CASE
+							WHEN a.time_on_page = '10M'
+							THEN a.sum_cnt
+							ELSE 0
+							END)AS 'ten_min'
+					,sum(CASE 
+							WHEN a.login_yn = 'Y'
+								THEN a.sum_cnt
+							ELSE 0
+							END) AS 'log_y_cnt'
+					,sum(CASE
+							WHEN a.login_yn = 'N'
+							THEN a.sum_cnt
+							ELSE 0
+							END)AS 'log_n_cnt'
+					,sum(CASE 
+							WHEN a.conn_way = 'M'
+								THEN a.sum_cnt
+							ELSE 0
+							END) AS 'mobile'
+					,sum(CASE
+							WHEN a.conn_way = 'P'
+							THEN a.sum_cnt
+							ELSE 0
+							END)AS 'PC'
+					,sum(CASE 
+							WHEN a.log_gb = '02'
+								THEN a.sum_cnt
+							ELSE 0
+							END) AS 'admin'
+					,sum(CASE
+							WHEN a.log_gb = '01' || a.log_gb ='03'
+							THEN a.sum_cnt
+							ELSE 0
+							END)AS 'user'
+					<if test=' search_type.equals("day") '>
+						, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM_DD" />) AS date
+					</if>
+					<if test=' search_type.equals("month") '>
+						, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM" /> ) AS date
+					</if>
+					<if test=' search_type.equals("period") '>
+						, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM_DD" />) AS date
+					</if>
+				FROM tb_active_log a
+				JOIN ts_menu_info b ON a.conn_uri = b.conn_uri AND b.log_use_yn = 'Y'
+				WHERE 1=1 
+				<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( time_page )">
+					AND a.time_on_page = #{time_page}
+				</if>
+				<choose>
+					<when test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( search_date )">
+						<if test=' search_type.equals("day") '>
+							AND DATE_FORMAT(a.reg_dts, '%Y-%m-%d') = #{search_date}
+						</if>
+						<if test=' search_type.equals("month") '>
+							AND DATE_FORMAT(a.reg_dts, '%Y-%m') = #{search_date}
+						</if>
+						<if test=' search_type.equals("period") '>
+							AND a.reg_dts BETWEEN DATE(#{search_date}) and DATE(#{search_date_end})+1
+						</if>
+					</when>
+					<otherwise>
+						AND DATE_FORMAT(a.reg_dts, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+					</otherwise>
+				</choose>
+				GROUP BY menu_seq, menu_nm, date
+				) c
+			) X
+	</select>
+	
+	<select id="getActiveRecordPagedList" parameterType="egovframework.work.statistics.model.StaticsPagingSearch" resultType="java.util.Map">
+		/* StaticsMapper.getActiveRecordPagedList */
+		SELECT c.*
+		FROM (
+			SELECT ifnull(b.menu_seq, '메뉴등록안됨') AS menu_seq
+				, ifnull(b.menu_nm, '메뉴등록안됨') AS menu_nm
+				,sum(a.sum_cnt) AS sum_cnt
+				,sum(CASE 
+						WHEN a.time_on_page IS NULL
+							THEN a.sum_cnt
+						ELSE 0
+						END) AS 'time_on_page IS NULL'
+				,sum(CASE 
+						WHEN a.time_on_page = 'IM'
+							THEN a.sum_cnt
+						ELSE 0
+						END) AS 'IM'
+				,sum(CASE 
+						WHEN a.time_on_page = '30S'
+							THEN a.sum_cnt
+						ELSE 0
+						END) AS 'thirty_sec' 
+				,sum(CASE
+						WHEN a.time_on_page = '3M'
+						THEN a.sum_cnt
+						ELSE 0
+						END)AS 'three_min'
+				,sum(CASE 
+						WHEN a.time_on_page = '5M'
+							THEN a.sum_cnt
+						ELSE 0
+						END) AS 'five_min' 
+				,sum(CASE
+						WHEN a.time_on_page = '10M'
+						THEN a.sum_cnt
+						ELSE 0
+						END)AS 'ten_min'
+				,sum(CASE 
+						WHEN a.login_yn = 'Y'
+							THEN a.sum_cnt
+						ELSE 0
+						END) AS 'log_y_cnt'
+				,sum(CASE
+						WHEN a.login_yn = 'N'
+						THEN a.sum_cnt
+						ELSE 0
+						END)AS 'log_n_cnt'
+				,sum(CASE 
+						WHEN a.conn_way = 'M'
+							THEN a.sum_cnt
+						ELSE 0
+						END) AS 'mobile'
+				,sum(CASE
+						WHEN a.conn_way = 'P'
+						THEN a.sum_cnt
+						ELSE 0
+						END)AS 'pc'
+				,sum(CASE 
+						WHEN a.log_gb = '02'
+							THEN a.sum_cnt
+						ELSE 0
+						END) AS 'admin'
+				,sum(CASE
+						WHEN a.log_gb = '01' || a.log_gb ='03'
+						THEN a.sum_cnt
+						ELSE 0
+						END)AS 'user'
+				<if test=' search_type.equals("day") '>
+					, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM_DD" />) AS date
+				</if>
+				<if test=' search_type.equals("month") '>
+					, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM" /> ) AS date
+				</if>
+				<if test=' search_type.equals("period") '>
+					, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM_DD" />) AS date
+				</if>
+			FROM tb_active_log a
+			JOIN ts_menu_info b ON a.conn_uri = b.conn_uri AND b.log_use_yn = 'Y'
+			WHERE 1=1 
+			<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( time_page )">
+				AND a.time_on_page = #{time_page}
+			</if>
+			<choose>
+				<when test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( search_date )">
+					<if test=' search_type.equals("day") '>
+						AND DATE_FORMAT(a.reg_dts, '%Y-%m-%d') = #{search_date}
+					</if>
+					<if test=' search_type.equals("month") '>
+						AND DATE_FORMAT(a.reg_dts, '%Y-%m') = #{search_date}
+					</if>
+					<if test=' search_type.equals("period") '>
+						AND a.reg_dts BETWEEN DATE(#{search_date}) and DATE(#{search_date_end})+1
+					</if>
+				</when>
+				<otherwise>
+					AND DATE_FORMAT(a.reg_dts, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+				</otherwise>
+			</choose>
+			GROUP BY menu_seq, menu_nm, date
+			ORDER BY date, menu_seq
+			) c
+		<!-- <if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isPaging )">
+			/* 페이징 처리 */
+			LIMIT #{start} , #{length}
+		</if> -->
+	</select>
+	
+	<select id="getActiveLoginUserRecordTotalCount" parameterType="egovframework.work.statistics.model.StaticsPagingSearch" resultType="java.lang.Integer">
+		/* StaticsMapper.getActiveLoginUserRecordTotalCount */
+		SELECT 
+		    COUNT(*)
+		FROM
+			(
+		    SELECT c.*
+				FROM (
+					SELECT ifnull(b.menu_seq, '메뉴등록안됨') AS menu_seq 
+						, ifnull(b.menu_nm, '메뉴등록안됨') AS menu_nm
+						<if test='search_detail_yn.equals("Y")'>
+						, a.active_detail_type AS type
+						, (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 303 AND tc.code = a.active_detail_type) AS detail_type_nm
+						, a.active_detail_gb AS detail_gb
+						,  (CASE WHEN a.active_detail_type = 'GENDER' THEN (CASE WHEN a.active_detail_gb = 1 THEN '남성' ELSE '여성' END) 
+								   WHEN a.active_detail_type = 'JOB' THEN (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 306 AND tc.code = a.active_detail_gb)
+							       WHEN a.active_detail_type = 'REGION' THEN (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 307 AND tc.code = a.active_detail_gb)
+							       WHEN a.active_detail_type = 'AGE' THEN (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 309 AND tc.code = a.active_detail_gb)
+							 END) AS detail_gb_nm
+							 
+						 </if>
+						,sum(a.active_detail_log_sum_cnt) AS sum_cnt
+						,sum(CASE 
+								WHEN a.time_on_page IS NULL
+									THEN a.active_detail_log_sum_cnt
+								ELSE 0
+								END) AS 'time_on_page IS NULL'
+						,sum(CASE 
+								WHEN a.time_on_page = 'IM'
+									THEN a.active_detail_log_sum_cnt
+								ELSE 0
+								END) AS 'IM'
+						,sum(CASE 
+								WHEN a.time_on_page = '30S'
+									THEN a.active_detail_log_sum_cnt
+								ELSE 0
+								END) AS 'thirty_sec' 
+						,sum(CASE
+								WHEN a.time_on_page = '3M'
+								THEN a.active_detail_log_sum_cnt
+								ELSE 0
+								END)AS 'three_min'
+						,sum(CASE 
+								WHEN a.time_on_page = '5M'
+									THEN a.active_detail_log_sum_cnt
+								ELSE 0
+								END) AS 'five_min' 
+						,sum(CASE
+								WHEN a.time_on_page = '10M'
+								THEN a.active_detail_log_sum_cnt
+								ELSE 0
+								END)AS 'ten_min'
+						,sum(CASE 
+								WHEN a.conn_way = 'M'
+									THEN a.active_detail_log_sum_cnt
+								ELSE 0
+								END) AS 'mobile'
+						,sum(CASE
+								WHEN a.conn_way = 'P'
+								THEN a.active_detail_log_sum_cnt
+								ELSE 0
+								END)AS 'pc'
+						<if test=' search_type.equals("day") '>
+							, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM_DD" />) AS date
+						</if>
+						<if test=' search_type.equals("month") '>
+							, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM" /> ) AS date
+						</if>
+						<if test=' search_type.equals("period") '>
+							, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM_DD" />) AS date
+						</if>
+					FROM tb_active_detail_log a
+					JOIN ts_menu_info b ON a.conn_uri = b.conn_uri AND b.log_use_yn = 'Y'
+					WHERE 1=1
+					<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( time_page )">
+						AND a.time_on_page = #{time_page}
+					</if>
+					<if test='search_detail_yn.equals("Y")'>
+		 				<trim prefix="AND (" prefixOverrides="OR">
+							<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( gender )">
+								OR a.active_detail_type = 'GENDER' AND a.active_detail_gb = #{gender}
+							</if>
+							<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( region )">
+								OR a.active_detail_type = 'REGION' AND a.active_detail_gb = #{region}
+							</if>
+							<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( age )">
+								OR a.active_detail_type = 'AGE' AND a.active_detail_gb = #{age}
+							</if>
+							<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( job )">
+								OR a.active_detail_type = 'JOB' AND a.active_detail_gb = #{job}
+							</if>
+							)
+						</trim>
+					</if>
+					<choose>
+						<when test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( search_date )">
+							<if test=' search_type.equals("day") '>
+								AND DATE_FORMAT(a.reg_dts, '%Y-%m-%d') = #{search_date}
+							</if>
+							<if test=' search_type.equals("month") '>
+								AND DATE_FORMAT(a.reg_dts, '%Y-%m') = #{search_date}
+							</if>
+							<if test=' search_type.equals("period") '>
+								AND a.reg_dts BETWEEN DATE(#{search_date}) and DATE(#{search_date_end})+1
+							</if>
+						</when>
+						<otherwise>
+							AND DATE_FORMAT(a.reg_dts, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+						</otherwise>
+					</choose>
+					GROUP BY menu_seq, menu_nm, date
+					<if test='search_detail_yn.equals("Y")'>
+						, type, detail_type_nm , detail_gb , detail_gb_nm
+					</if>
+					ORDER BY date, menu_seq
+					) c
+		    ) A
+	</select>
+	
+	<select id="getActiveLoginUserRecordPagedList" parameterType="egovframework.work.statistics.model.StaticsPagingSearch" resultType="java.util.Map">
+		/* StaticsMapper.getActiveLoginUserRecordPagedList */
+		SELECT c.*
+			FROM (
+				SELECT ifnull(b.menu_seq, '메뉴등록안됨') AS menu_seq 
+					, ifnull(b.menu_nm, '메뉴등록안됨') AS menu_nm
+					<if test='search_detail_yn.equals("Y")'>
+					, a.active_detail_type AS type
+					, (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 303 AND tc.code = a.active_detail_type) AS detail_type_nm
+					, a.active_detail_gb AS detail_gb
+					,  (CASE WHEN a.active_detail_type = 'GENDER' THEN (CASE WHEN a.active_detail_gb = 1 THEN '남성' ELSE '여성' END) 
+								   WHEN a.active_detail_type = 'JOB' THEN (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 306 AND tc.code = a.active_detail_gb)
+							       WHEN a.active_detail_type = 'REGION' THEN (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 307 AND tc.code = a.active_detail_gb)
+							       WHEN a.active_detail_type = 'AGE' THEN (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 309 AND tc.code = a.active_detail_gb)
+							 END) AS detail_gb_nm
+					</if>
+					,sum(a.active_detail_log_sum_cnt) AS sum_cnt
+					,sum(CASE 
+							WHEN a.time_on_page IS NULL
+								THEN a.active_detail_log_sum_cnt
+							ELSE 0
+							END) AS 'time_on_page IS NULL'
+					,sum(CASE 
+							WHEN a.time_on_page = 'IM'
+								THEN a.active_detail_log_sum_cnt
+							ELSE 0
+							END) AS 'IM'
+					,sum(CASE 
+							WHEN a.time_on_page = '30S'
+								THEN a.active_detail_log_sum_cnt
+							ELSE 0
+							END) AS 'thirty_sec' 
+					,sum(CASE
+							WHEN a.time_on_page = '3M'
+							THEN a.active_detail_log_sum_cnt
+							ELSE 0
+							END)AS 'three_min'
+					,sum(CASE 
+							WHEN a.time_on_page = '5M'
+								THEN a.active_detail_log_sum_cnt
+							ELSE 0
+							END) AS 'five_min' 
+					,sum(CASE
+							WHEN a.time_on_page = '10M'
+							THEN a.active_detail_log_sum_cnt
+							ELSE 0
+							END)AS 'ten_min'
+					,sum(CASE 
+							WHEN a.conn_way = 'M'
+								THEN a.active_detail_log_sum_cnt
+							ELSE 0
+							END) AS 'mobile'
+					,sum(CASE
+							WHEN a.conn_way = 'P'
+							THEN a.active_detail_log_sum_cnt
+							ELSE 0
+							END)AS 'pc'
+					<if test=' search_type.equals("day") '>
+						, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM_DD" />) AS date
+					</if>
+					<if test=' search_type.equals("month") '>
+						, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM" /> ) AS date
+					</if>
+					<if test=' search_type.equals("period") '>
+						, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM_DD" />) AS date
+					</if>
+				FROM tb_active_detail_log a
+				JOIN ts_menu_info b ON a.conn_uri = b.conn_uri AND b.log_use_yn = 'Y'
+				WHERE 1=1
+				<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( time_page )">
+					OR a.time_on_page = #{time_page}
+				</if>
+				<if test='search_detail_yn.equals("Y")'>
+	 				<trim prefix="AND (" prefixOverrides="OR">
+						<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( gender )">
+							OR a.active_detail_type = 'GENDER' AND a.active_detail_gb = #{gender}
+						</if>
+						<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( region )">
+							OR a.active_detail_type = 'REGION' AND a.active_detail_gb = #{region}
+						</if>
+						<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( age )">
+							OR a.active_detail_type = 'AGE' AND a.active_detail_gb = #{age}
+						</if>
+						<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( job )">
+							OR a.active_detail_type = 'JOB' AND a.active_detail_gb = #{job}
+						</if>
+						)
+					</trim>
+				</if>
+				<choose>
+					<when test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( search_date )">
+						<if test=' search_type.equals("day") '>
+							AND DATE_FORMAT(a.reg_dts, '%Y-%m-%d') = #{search_date}
+						</if>
+						<if test=' search_type.equals("month") '>
+							AND DATE_FORMAT(a.reg_dts, '%Y-%m') = #{search_date}
+						</if>
+						<if test=' search_type.equals("period") '>
+							AND a.reg_dts BETWEEN DATE(#{search_date}) and DATE(#{search_date_end})+1
+						</if>
+					</when>
+					<otherwise>
+						AND DATE_FORMAT(a.reg_dts, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+					</otherwise>
+				</choose>
+				GROUP BY menu_seq, menu_nm, date
+				<if test='search_detail_yn.equals("Y")'>
+					, type, detail_type_nm , detail_gb , detail_gb_nm
+				</if>
+				ORDER BY date, menu_seq
+				) c
+			<!-- <if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isPaging )">
+				/* 페이징 처리 */
+				LIMIT #{start} , #{length}
+			</if> -->
+	</select>
+	
+	
+	<select id="getCourseRecordTotalCount" parameterType="egovframework.work.statistics.model.StaticsPagingSearch" resultType="java.lang.Integer">
+		/* StaticsMapper.getCourseRecordTotalCount */
+		SELECT 
+		    COUNT(*)
+		FROM
+		    (
+			    SELECT 
+				    c.*
+				FROM
+				    (SELECT 
+				        tc.course_nm,
+				            SUM(a.sum_course_cnt) AS sum_course_cnt,
+				            SUM(CASE
+				                WHEN a.time_on_page IS NULL THEN a.sum_course_cnt
+				                ELSE 0
+				            END) AS 'time_on_page IS NULL',
+				            SUM(CASE
+				                WHEN a.time_on_page = 'IM' THEN a.sum_course_cnt
+				                ELSE 0
+				            END) AS 'IM',
+				            SUM(CASE
+				                WHEN a.time_on_page = '30S' THEN a.sum_course_cnt
+				                ELSE 0
+				            END) AS 'thirty_sec',
+				            SUM(CASE
+				                WHEN a.time_on_page = '3M' THEN a.sum_course_cnt
+				                ELSE 0
+				            END) AS 'three_min',
+				            SUM(CASE
+				                WHEN a.time_on_page = '5M' THEN a.sum_course_cnt
+				                ELSE 0
+				            END) AS 'five_min',
+				            SUM(CASE
+				                WHEN a.time_on_page = '10M' THEN a.sum_course_cnt
+				                ELSE 0
+				            END) AS 'ten_min',
+				            SUM(CASE
+				                WHEN a.login_yn = 'Y' THEN a.sum_course_cnt
+				                ELSE 0
+				            END) AS 'log_y_cnt',
+				            SUM(CASE
+				                WHEN a.login_yn = 'N' THEN a.sum_course_cnt
+				                ELSE 0
+				            END) AS 'log_n_cnt',
+				            SUM(CASE
+				                WHEN a.conn_way = 'M' THEN a.sum_course_cnt
+				                ELSE 0
+				            END) AS 'mobile',
+				            SUM(CASE
+				                WHEN a.conn_way = 'P' THEN a.sum_course_cnt
+				                ELSE 0
+				            END) AS 'pc'
+				            <if test=' search_type.equals("day") '>
+								, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM_DD" />) AS date
+							</if>
+							<if test=' search_type.equals("month") '>
+								, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM" /> ) AS date
+							</if>
+							<if test=' search_type.equals("period") '>
+								, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM_DD" />) AS date
+							</if>
+							<if test='search_detail_yn.equals("Y")'>
+								, b.active_detail_type AS type
+								, (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 303 AND tc.code = b.active_detail_type) AS detail_type_nm
+								, b.active_detail_gb AS detail_gb
+								,  (CASE WHEN b.active_detail_type = 'GENDER' THEN (CASE WHEN b.active_detail_gb = 1 THEN '남성' ELSE '여성' END) 
+								   WHEN b.active_detail_type = 'JOB' THEN (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 306 AND tc.code = b.active_detail_gb)
+							       WHEN b.active_detail_type = 'REGION' THEN (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 307 AND tc.code = b.active_detail_gb)
+							       WHEN b.active_detail_type = 'AGE' THEN (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 307 AND tc.code = b.active_detail_gb)
+							 END) AS detail_gb_nm
+							</if>
+				    FROM
+				        tb_active_course_log a
+				    LEFT JOIN tb_course tc ON a.course_seq = tc.course_seq
+				    <if test="@org.apache.commons.lang3.BooleanUtils@isTrue( check_login_yn )">
+				    INNER JOIN tb_active_detail_log b ON a.active_detail_log_seq = b.active_detail_log_seq
+				    </if>
+				    WHERE 1=1
+				    <if test="@org.apache.commons.lang3.BooleanUtils@isTrue( check_login_yn )">
+		 				AND a.login_yn = 'Y'
+		 				<if test='search_detail_yn.equals("Y")'>
+			 				<trim prefix="AND (" prefixOverrides="OR">
+				 				<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( gender )">
+									OR b.active_detail_type = 'GENDER' AND b.active_detail_gb = #{gender}
+								</if>
+								<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( region )">
+									OR b.active_detail_type = 'REGION' AND b.active_detail_gb = #{region}
+								</if>
+								<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( age )">
+									OR b.active_detail_type = 'AGE' AND b.active_detail_gb = #{age}
+								</if>
+								<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( job )">
+									OR b.active_detail_type = 'JOB' AND b.active_detail_gb = #{job}
+								</if>
+								)
+							</trim>
+						</if>
+		 			</if>
+		 			<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( time_page )">
+						AND a.time_on_page = #{time_page}
+					</if>
+					<choose>
+						<when test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( search_date )">
+							<if test=' search_type.equals("day") '>
+								AND DATE_FORMAT(a.reg_dts, '%Y-%m-%d') = #{search_date}
+							</if>
+							<if test=' search_type.equals("month") '>
+								AND DATE_FORMAT(a.reg_dts, '%Y-%m') = #{search_date}
+							</if>
+							<if test=' search_type.equals("period") '>
+								AND a.reg_dts BETWEEN DATE(#{search_date}) and DATE(#{search_date_end})+1
+							</if>
+						</when>
+						<otherwise>
+							AND DATE_FORMAT(a.reg_dts, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+						</otherwise>
+					</choose>
+				    GROUP BY a.course_seq , a.time_on_page, date
+			    	<if test='search_detail_yn.equals("Y")'>
+		 				, type, detail_gb
+		 			</if>
+				    
+				    ) c
+				    LIMIT 30
+			) x
+	</select>
+	
+	<select id="getCourseRecordPagedList" parameterType="egovframework.work.statistics.model.StaticsPagingSearch" resultType="java.util.Map">
+		/* StaticsMapper.getCourseRecordPagedList */
+		SELECT 
+		    c.*
+		FROM
+		    (SELECT 
+		    	DENSE_RANK()OVER (ORDER BY SUM(a.sum_course_cnt) DESC) rank_odr, 
+		        tc.course_nm, 
+		            SUM(a.sum_course_cnt) AS sum_course_cnt,
+		            SUM(CASE
+		                WHEN a.time_on_page IS NULL THEN a.sum_course_cnt
+		                ELSE 0
+		            END) AS 'time_on_page IS NULL',
+		            SUM(CASE
+		                WHEN a.time_on_page = 'IM' THEN a.sum_course_cnt
+		                ELSE 0
+		            END) AS 'IM',
+		            SUM(CASE
+		                WHEN a.time_on_page = '30S' THEN a.sum_course_cnt
+		                ELSE 0
+		            END) AS 'thirty_sec',
+		            SUM(CASE
+		                WHEN a.time_on_page = '3M' THEN a.sum_course_cnt
+		                ELSE 0
+		            END) AS 'three_min',
+		            SUM(CASE
+		                WHEN a.time_on_page = '5M' THEN a.sum_course_cnt
+		                ELSE 0
+		            END) AS 'five_min',
+		            SUM(CASE
+		                WHEN a.time_on_page = '10M' THEN a.sum_course_cnt
+		                ELSE 0
+		            END) AS 'ten_min',
+		            SUM(CASE
+		                WHEN a.login_yn = 'Y' THEN a.sum_course_cnt
+		                ELSE 0
+		            END) AS 'log_y_cnt',
+		            SUM(CASE
+		                WHEN a.login_yn = 'N' THEN a.sum_course_cnt
+		                ELSE 0
+		            END) AS 'log_n_cnt',
+		            SUM(CASE
+		                WHEN a.conn_way = 'M' THEN a.sum_course_cnt
+		                ELSE 0
+		            END) AS 'mobile',
+		            SUM(CASE
+		                WHEN a.conn_way = 'P' THEN a.sum_course_cnt
+		                ELSE 0
+		            END) AS 'pc'
+		            <if test=' search_type.equals("day") '>
+						, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM_DD" />) AS date
+					</if>
+					<if test=' search_type.equals("month") '>
+						, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM" /> ) AS date
+					</if>
+					<if test=' search_type.equals("period") '>
+						, DATE_FORMAT(a.reg_dts, <include refid="localThread.YYYY_MM_DD" />) AS date
+					</if>
+					<if test='search_detail_yn.equals("Y")'>
+						, b.active_detail_type AS type
+						, (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 303 AND tc.code = b.active_detail_type) AS detail_type_nm
+						, b.active_detail_gb AS detail_gb
+						,  (CASE WHEN b.active_detail_type = 'GENDER' THEN (CASE WHEN b.active_detail_gb = 1 THEN '남성' ELSE '여성' END) 
+								   WHEN b.active_detail_type = 'JOB' THEN (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 306 AND tc.code = b.active_detail_gb)
+							       WHEN b.active_detail_type = 'REGION' THEN (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 307 AND tc.code = b.active_detail_gb)
+							       WHEN b.active_detail_type = 'AGE' THEN (SELECT tc.code_nm FROM tb_code tc WHERE tc.group_code = 309 AND tc.code = b.active_detail_gb)
+							 END) AS detail_gb_nm
+					</if>
+		    FROM
+		        tb_active_course_log a
+		    LEFT JOIN tb_course tc ON a.course_seq = tc.course_seq
+		    <if test="@org.apache.commons.lang3.BooleanUtils@isTrue( check_login_yn )">
+		    INNER JOIN tb_active_detail_log b ON a.active_detail_log_seq = b.active_detail_log_seq
+		    </if>
+		    WHERE 1=1 
+		    <if test="@org.apache.commons.lang3.BooleanUtils@isTrue( check_login_yn )">
+ 				AND a.login_yn = 'Y'
+ 				<if test='search_detail_yn.equals("Y")'>
+	 				<trim prefix="AND (" prefixOverrides="OR">
+		 				<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( gender )">
+							OR b.active_detail_type = 'GENDER' AND b.active_detail_gb = #{gender}
+						</if>
+						<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( region )">
+							OR b.active_detail_type = 'REGION' AND b.active_detail_gb = #{region}
+						</if>
+						<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( age )">
+							OR b.active_detail_type = 'AGE' AND b.active_detail_gb = #{age}
+						</if>
+						<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( job )">
+							OR b.active_detail_type = 'JOB' AND b.active_detail_gb = #{job}
+						</if>
+						)
+					</trim>
+				</if>
+ 			</if>
+			<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( time_page )">
+				AND a.time_on_page = #{time_page}
+			</if>
+			
+			<choose>
+				<when test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( search_date )">
+					<if test=' search_type.equals("day") '>
+						AND DATE_FORMAT(a.reg_dts, '%Y-%m-%d') = #{search_date}
+					</if>
+					<if test=' search_type.equals("month") '>
+						AND DATE_FORMAT(a.reg_dts, '%Y-%m') = #{search_date}
+					</if>
+					<if test=' search_type.equals("period") '>
+						AND a.reg_dts BETWEEN DATE(#{search_date}) and DATE(#{search_date_end})+1
+					</if>
+				</when>
+				<otherwise>
+					AND DATE_FORMAT(a.reg_dts, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+				</otherwise>
+			</choose>
+		    GROUP BY a.course_seq , a.time_on_page, date
+		    <if test='search_detail_yn.equals("Y")'>
+ 				, type, detail_gb
+ 			</if>
+ 			ORDER BY SUM(a.sum_course_cnt) DESC
+		    ) c
+		    LIMIT 30
+		   	<!-- <if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isPaging )">
+				/* 페이징 처리 */
+				LIMIT #{start} , #{length}
+			</if> -->
+	</select>
+	
+	<!-- 시도 코드 -->
+	<select id="getAgeCode"  resultType="java.util.Map">
+		/* StaticsMapper.getAgeCode */
+		SELECT 
+			*
+		FROM TB_CODE
+		WHERE GROUP_CODE = 309
+		AND USE_YN = 'Y'
+		ORDER BY CODE_SEQ
+	</select>
+
+	<!-- 강좌명 검색어 TOP 5 -->
+	<select id="getSelectSearchCal1" resultType="java.util.Map">
+		/* StaticsMapper.getSelectSearchCal1 */
+		select
+		group_concat(distinct sec.search_descr)search_descr,
+		FORMAT(max(sec.se_de_cnt),0) as se_de_cnt,
+		sec.rank_odr
+		from(
+		select
+		fir.search_descr,
+		fir.se_de_cnt,
+		dense_rank()over (order by fir.se_de_cnt desc) rank_odr
+		from(
+		select
+		search_descr,
+		count(search_seq)se_de_cnt
+		from
+		ts_search_log
+		where search_type = '1'
+		and search_descr != ''
+		and conn_dt BETWEEN DATE_ADD(NOW(),INTERVAL -1 MONTH ) AND NOW()
+		group by search_descr)fir
+		order by se_de_cnt desc)sec
+		where sec.rank_odr &lt; 6
+		group by sec.rank_odr
+	</select>
+
+
+	<!-- 검색어 순위 TOP 7 -->
+	<select id="getSelectSearchCal2" resultType="java.util.Map">
+	/* StaticsMapper.getSelectSearchCal2 */
+	select
+	sec.rank_odr,
+	group_concat(distinct sec.search_descr) as search_descr,
+	group_concat(distinct sec.code_nm) as code_nm,
+	FORMAT(max(sec.tot_cnt),0) as tot_cnt
+	from(
+	select
+	dense_rank()over (order by fir.tot_cnt desc) rank_odr,
+	fir.search_descr,
+	(select
+	replace(group_concat(tc.code_nm),'검색','')
+	from tb_code tc
+	where tc.group_code = '304'
+	and FIND_IN_SET (tc.code, fir.search_type)) as code_nm,
+	fir.tot_cnt
+	from(
+	select
+	tsl.search_descr,
+	group_concat(DISTINCT tsl.search_type)as search_type,
+	count(tsl.search_Seq) as tot_cnt
+	from
+	ts_search_log tsl
+	where tsl.search_type in ('1', '3', '4', '5', '6')
+	and tsl.search_descr != ''
+	and tsl.conn_dt BETWEEN DATE_ADD(NOW(),INTERVAL -1 MONTH ) AND NOW()
+	group by tsl.search_descr) fir
+	order by fir.tot_cnt desc)sec
+	where rank_odr &lt; 8
+	group by rank_odr
+	</select>
+
+	<select id="getSelectSearchCal3" resultType="java.util.Map">
+		/* StaticsMapper.getSelectSearchCal3 */
+		SELECT 
+		    (SELECT 
+		            tc.code_nm
+		        FROM
+		            tb_code tc
+		        WHERE
+		            tc.group_code = '305'
+		                AND tc.code = fir.search_place) AS search_place,
+		    FORMAT(fir.pl_cnt, 0) AS pl_cnt
+		FROM
+		    (SELECT 
+				ttc.code search_place, COUNT(tsl.search_seq) pl_cnt
+			FROM
+				ts_search_log tsl
+			RIGHT OUTER JOIN (SELECT * FROM tb_code tc WHERE tc.group_code = 305 and code != '*') ttc 
+			ON ttc.code = tsl.search_place
+			GROUP BY ttc.code) fir
+		ORDER BY pl_cnt DESC;
+	</select>
+
+	<select id="getSelectSearchCal4" resultType="java.util.Map">
+		/* StaticsMapper.getSelectSearchCal4 */
+		select
+		ifnull(fir.date_range,0) AS week_name ,
+		count(search_seq) as tot_cnt
+		from(
+		select
+		CASE DAYOFWEEK(conn_dt)
+		WHEN 1 THEN "Sun"
+		WHEN 2 THEN "Mon"
+		WHEN 3 THEN "Tue"
+		WHEN 4 THEN "Wed"
+		WHEN 5 THEN "Thu"
+		WHEN 6 THEN "Fri"
+		WHEN 7 THEN "Sat"
+		END AS date_range,
+		search_seq
+		from ts_search_log
+		where conn_dt BETWEEN DATE_ADD(NOW(),INTERVAL -1 MONTH ) AND NOW())fir
+		group by fir.date_range
+	</select>
+
+	<select id="getTotalStatistic"  resultType="java.util.Map">
+		/* StaticsMapper.getCourseRecordPagedList */
+		select
+		 FORMAT((select count(*) from tb_course_score),0) as tot_score_cnt
+		,FORMAT((select count(*) from tb_course),0) as tot_course_cnt
+	    ,FORMAT((select count(*) from ts_user_info),0) as tot_user_cnt
+		from dual
+	</select>
+	
+</mapper>

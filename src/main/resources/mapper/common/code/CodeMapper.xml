@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.common.component.code.mapper.CodeMapper">
+
+	<select id="getSchCds" parameterType="java.util.Map"
+								resultType="egovframework.common.component.code.model.SchCd" >
+		/* CodeMapper.getSchCds */
+		SELECT
+		  SCH_CD
+		  ,SCH_FULL_NAME
+		  ,SCH_NAME
+		FROM TS_SCH_CODE
+		WHERE DEL_CD = 'N'
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( sch_cd )">
+		AND SCH_CD = #{sch_cd}
+		</if>
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( sch_name )">
+		AND SCH_NAME LIKE CONCAT( '%', #{sch_name} ,'%' )
+		</if>
+	</select>
+
+	<select id="getCommCds" parameterType="java.util.Map"
+									resultType="egovframework.common.component.code.model.CommCd">
+		/* CodeMapper.getCommCds */
+		SELECT
+		   leader_cd
+		  ,comm_cd
+		  ,cd_name
+		  ,definition
+		  ,cd_order
+		FROM TS_COMM_CODE
+		WHERE del_yn = 'N'
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( leader_cd )">
+		AND leader_cd = #{leader_cd}
+		</if>
+		<if test="@org.apache.commons.lang3.ObjectUtils@isNotEmpty( comm_cd )">
+		AND comm_cd = #{comm_cd}
+		</if>
+		ORDER BY cd_order ASC
+	</select>
+
+	<select id="getProhibitedList" parameterType="java.util.Map" resultType="String">
+		/* TestMapper.getProhibitedList */
+		SELECT slang
+		FROM TS_SLANG
+		WHERE 1=1 
+		AND del_yn= 'N'
+	</select>
+</mapper>

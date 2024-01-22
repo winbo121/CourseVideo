@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.work.oauth.mapper.OAuthMapper">
+
+    <select id="checkSocialUser" resultType="String">
+    	/* OAuthMapper.checkSocialUser*/
+    	SELECT USER_ID
+    	FROM TB_SOCIAL_CONN_INFO
+    	WHERE IDNTF_NO = #{uid}
+    	AND SE_NM = #{serviceName}
+    </select>
+    
+    <insert id="insertSocialUser">
+    	/* OAuthMapper.insertSocialUser*/
+    	INSERT INTO TB_SOCIAL_CONN_INFO
+    	(
+			 IDNTF_NO
+			,CONN_ID 
+			,SE_NM
+			,USER_ID
+			,REG_ID
+			,REG_DT
+    	)
+    	VALUES
+    	(
+    		 #{idntfNo}
+    		,#{connId}
+			,#{seNm}
+			,#{userId}
+			,#{userId}
+			,SYSDATE()
+    	)
+    </insert>
+    
+    <delete id="deleteSocialUser">
+    	/* OAuthMapper.deleteSocialUser*/
+    	DELETE FROM TB_SOCIAL_CONN_INFO
+    	WHERE USER_ID = #{userId}
+    	AND SE_Nm = #{seNm}
+    </delete>
+    
+    <select id="getSocialInfoList" resultType="java.util.Map">
+    	/* oAuthMapper.getSocialInfo */
+    	select 
+			tb.* 
+		    ,case
+				when tb.user_id is null then 'N'
+		        else 'Y'
+			 end as connected
+		from
+		(
+		select 
+			tsci.idntf_no as idntf_no
+		    ,tc.code as code
+		    ,tc.code_nm code_nm
+		    ,tsci.user_id as user_id
+		    ,tsci.reg_id as reg_id
+		    ,tsci.reg_dt as reg_dt
+		    ,tsci.mdfr_id as mdfr_id
+		    ,tsci.mdfcn_dt as mdfcn_dt
+		from tb_code tc
+		left join tb_social_conn_info tsci
+		on tc.code = tsci.se_nm
+		and tsci.user_id = <include refid="localThread.LOGIN_ID"/>
+		where tc.group_code = 308 
+		and use_yn = 'Y' 
+		and sort_no not in (308)
+		order by tc.sort_no
+		) tb;
+    </select>
+
+</mapper>

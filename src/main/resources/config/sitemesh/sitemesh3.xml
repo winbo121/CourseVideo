@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemesh>
+
+
+  <!-- 로그인 이후 DECORATOR  -->
+  <mapping path="/**" decorator="/WEB-INF/decorator/afterLogin.jsp"/>
+	<!-- MODAL DECORATOR -->
+  <mapping path="/*/modal/**" decorator="/WEB-INF/decorator/modal.jsp"/>
+
+
+
+  <mapping path="*/*Popup" decorator="/WEB-INF/jsp/decorator/defaultPopup.jsp"/>
+
+
+  <mapping path="*/common/*" excludes="true"/>
+</sitemesh>

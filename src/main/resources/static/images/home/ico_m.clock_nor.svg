@@ -1,0 +1,16 @@
+<svg id="ico_m.clock_nor" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
+    <defs>
+        <style>
+            .cls-2{fill:#263238;stroke:#263238;stroke-width:.8px}
+        </style>
+    </defs>
+    <path id="bg" style="fill:none" d="M0 0h15v15H0z"/>
+    <g id="clock" transform="translate(1.186 1.186)">
+        <g id="그룹_861" data-name="그룹 861">
+            <path id="패스_1731" data-name="패스 1731" class="cls-2" d="M6.315 12.63a6.315 6.315 0 1 1 6.315-6.315 6.322 6.322 0 0 1-6.315 6.315zm0-12.1A5.789 5.789 0 1 0 12.1 6.315 5.8 5.8 0 0 0 6.315.526z"/>
+        </g>
+        <g id="그룹_862" data-name="그룹 862" transform="translate(6.052 2.105)">
+            <path id="패스_1732" data-name="패스 1732" class="cls-2" d="M14.658 11.368a.264.264 0 0 1-.186-.077L11.577 8.4a.265.265 0 0 1-.077-.19V4.263a.263.263 0 0 1 .526 0V8.1l2.818 2.818a.263.263 0 0 1-.186.449z" transform="translate(-11.5 -4)"/>
+        </g>
+    </g>
+</svg>

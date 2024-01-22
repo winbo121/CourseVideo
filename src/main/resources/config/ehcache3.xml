@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+         updateCheck="false">
+
+	<!-- 임시 저장 경로 -->
+    <diskStore path="java.io.tmpdir"/>
+
+	<!--
+		maxEntriesLocalHeap				: 메모리 최대 생성 객체수
+		maxEntriesLocalDisk				: 디스크 최대 생성 객체수
+		maxElementsInMemory             : 메모리에 캐싱 되어질 객체의 최대수(0 무제한)
+		eternal							: 캐쉬 삭제여부
+		timeToIdleSeconds				: 미사용 캐시 삭제 시간
+		timeToLiveSeconds				: 캐시 삭제 시간
+		diskExpiryThreadIntervalSeconds	: 디스크 수행 시간 간격
+		memoryStoreEvictionPolicy		: 메모리 최대 생성 이후 정책 설정
+	 -->
+    <defaultCache
+            maxEntriesLocalHeap="100"
+            maxEntriesLocalDisk="100"
+            eternal="false"
+            timeToIdleSeconds="0"
+            timeToLiveSeconds="120"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU"/>
+
+    <cache name="kotech_cache"
+    		maxEntriesLocalHeap="100"
+            eternal="false"
+            overflowToDisk="false"
+            timeToIdleSeconds="600"
+            timeToLiveSeconds="1200"
+            memoryStoreEvictionPolicy="LRU" />
+
+
+
+</ehcache>

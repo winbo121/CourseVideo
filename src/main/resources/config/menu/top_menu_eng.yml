@@ -1,0 +1,75 @@
+#####################################################################
+# TOP MENU
+#####################################################################
+top_menus: [
+   {
+      name: Content Management
+      ,roles: [ ROLE_ADMIN ]
+      ,children: [
+         { name: Course Registration 
+           ,mobile: true
+           ,pattern: /conage/courseEnrollMain/**
+           ,roles: [ ROLE_ADMIN ] }
+           ,target: false
+        ,{ name: Content Registration
+           ,mobile: true
+           ,pattern: /conage/contentEnrollMain/**
+           ,roles: [ ROLE_ADMIN ] }
+           ,target: false
+      ]
+    }
+    ,{
+      name: Online Course
+      ,roles: [ ROLE_ANONYMOUS ]
+      ,children: [
+         { name: Find Courses
+           ,mobile: true
+           ,pattern: /course/courseFind/**
+           ,roles: [ ROLE_ANONYMOUS ] }
+           ,target: false
+        ,{ name: Watching Course
+           ,mobile: true
+           ,pattern: /course/courseSearch/**
+           ,roles: [ ROLE_ANONYMOUS ] }
+           ,target: false
+      ]
+    }
+    ,{
+      name: Community
+      ,roles: [ ROLE_ANONYMOUS ]
+      ,children: [
+         { name: Notice 
+           ,mobile: true
+           ,pattern: /notice/noticeMain/**
+           ,roles: [ ROLE_ANONYMOUS ] }
+           ,target: false
+        ,{ name: Community
+           ,mobile: true
+           ,pattern: /
+           ,roles: [ ROLE_ANONYMOUS ] }
+           ,target: false
+      ]
+    }
+    ,{
+      name: Statistics
+      ,roles: [ ROLE_ADMIN ]
+      ,children: [
+         { name: Member Access History 
+           ,mobile: true
+           ,pattern: /
+           ,roles: [ ROLE_ADMIN ] }
+           ,target: false
+        ,{ name: Activity Record
+           ,mobile: true
+           ,pattern: /
+           ,roles: [ ROLE_ADMIN ] }
+           ,target: false
+        ,{ name: Search History
+           ,mobile: true
+           ,pattern: /
+           ,roles: [ ROLE_ADMIN ] }
+           ,target: false   
+      ]
+    }
+]
+
