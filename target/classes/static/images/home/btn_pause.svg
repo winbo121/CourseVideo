@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+    <circle cx="40" cy="40" r="40" style="opacity:.5"/>
+    <path data-name="bg" style="fill:none" d="M0 0h80v80H0z"/>
+    <path data-name="3671829_pause_icon" d="M5 4h6.183v24.734H5zm14.428 0h6.183v24.734h-6.183z" transform="translate(24.693 23.633)" style="fill:#fff"/>
+</svg>

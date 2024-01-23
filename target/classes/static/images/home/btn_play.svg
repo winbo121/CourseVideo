@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+    <circle cx="40" cy="40" r="40" style="opacity:.5"/>
+    <path data-name="bg" style="fill:none" d="M0 0h80v80H0z"/>
+    <g data-name="211801_play_icon">
+        <path data-name="패스 1757" d="M128 96v28.911l23.129-14.456L128 96z" style="fill:#fff" transform="translate(-97.322 -70.457)"/>
+    </g>
+</svg>

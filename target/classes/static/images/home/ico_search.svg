@@ -1,0 +1,18 @@
+<svg id="ico_search" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15">
+    <defs>
+        <style>
+            .cls-2{fill:gray}
+        </style>
+    </defs>
+    <path id="bg" style="fill:none" d="M0 0h15v15H0z"/>
+    <g id="그룹_6" data-name="그룹 6">
+        <g id="그룹_5" data-name="그룹 5">
+            <path id="패스_11" data-name="패스 11" class="cls-2" d="M6.337 0a6.337 6.337 0 1 0 6.337 6.337A6.344 6.344 0 0 0 6.337 0zm0 11.565a5.228 5.228 0 1 1 5.228-5.228 5.234 5.234 0 0 1-5.228 5.228z"/>
+        </g>
+    </g>
+    <g id="그룹_8" data-name="그룹 8" transform="translate(9.863 9.863)">
+        <g id="그룹_7" data-name="그룹 7" transform="translate(.001 .001)">
+            <path id="패스_12" data-name="패스 12" class="cls-2" d="m341.682 340.9-4.027-4.027a.554.554 0 0 0-.784.784l4.027 4.027a.554.554 0 1 0 .784-.784z" transform="translate(-336.709 -336.71)"/>
+        </g>
+    </g>
+</svg>

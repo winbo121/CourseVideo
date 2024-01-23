@@ -1,0 +1,24 @@
+<svg id="ico_menu" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    <defs>
+        <style>
+            .cls-2{fill:#707070;stroke:#707070;stroke-width:.2px}
+        </style>
+    </defs>
+    <g id="menu" transform="translate(3.666 -69.512)">
+        <g id="그룹_817" data-name="그룹 817" transform="translate(0 80.86)">
+            <g id="그룹_816" data-name="그룹 816">
+                <path id="패스_1703" data-name="패스 1703" class="cls-2" d="M16.018 236H.651a.651.651 0 1 0 0 1.3h15.367a.651.651 0 1 0 0-1.3z" transform="translate(0 -236)"/>
+            </g>
+        </g>
+        <g id="그룹_819" data-name="그룹 819" transform="translate(0 74.86)">
+            <g id="그룹_818" data-name="그룹 818">
+                <path id="패스_1704" data-name="패스 1704" class="cls-2" d="M16.018 76H.651a.651.651 0 1 0 0 1.3h15.367a.651.651 0 0 0 0-1.3z" transform="translate(0 -76)"/>
+            </g>
+        </g>
+        <g id="그룹_821" data-name="그룹 821" transform="translate(0 86.86)">
+            <g id="그룹_820" data-name="그룹 820">
+                <path id="패스_1705" data-name="패스 1705" class="cls-2" d="M16.018 396H.651a.651.651 0 1 0 0 1.3h15.367a.651.651 0 1 0 0-1.3z" transform="translate(0 -396)"/>
+            </g>
+        </g>
+    </g>
+</svg>

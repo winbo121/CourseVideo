@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="localThread">
+
+	<!-- 로그인 사용자 ID
+		example: <include refid="localThread.LOGIN_ID"/>  -->
+	 <sql id="LOGIN_ID">
+	 		<choose>
+				<when test="@egovframework.common.util.LocalThread@isLogin() || @egovframework.common.util.LocalThread@isAdmin()">'${ @egovframework.common.util.LocalThread@getLoginId() }'</when>
+				<otherwise>NULL</otherwise>
+			</choose>
+	 </sql>
+
+	<!-- 로그인 사용자 학년
+		example: <include refid="localThread.LOGIN_SCH_GRADE"/>  -->
+	 <sql id="LOGIN_SCH_GRADE">
+	 		<choose>
+				<when test="@egovframework.common.util.LocalThread@isLogin()">'${ @egovframework.common.util.LocalThread@getSchGrade() }'</when>
+				<otherwise>NULL</otherwise>
+			</choose>
+	 </sql>
+
+	<!-- 로그인 사용자 IP
+		example: <include refid="localThread.REMOTE_ADDR"/>  -->
+	 <sql id="REMOTE_ADDR"> INET_ATON( '${ @egovframework.common.util.LocalThread@getRemoteAddr() }' )  </sql>
+
+	<!-- 날짜포멧 ( 20200422175953 )
+		example: <include refid="localThread.YYYYMMDDHHMISS"/> -->
+	<sql id="YYYYMMDDHHMISS">'%Y%m%d%H%i%S'</sql>
+
+	<!-- 날짜포멧 ( 2020-04-22 17:57 )
+		example: <include refid="localThread.YYYY_MM_DD_HH_MI"/> -->
+	<sql id="YYYY_MM_DD_HH_MI">'%Y-%m-%d %H:%i'</sql>
+
+	<!-- 날짜포멧 ( 2020-04-22 17:57:00 )
+		example: <include refid="localThread.YYYY_MM_DD_HH_MI_SS"/> -->
+	<sql id="YYYY_MM_DD_HH_MI_SS">'%Y-%m-%d %H:%i:%S'</sql>
+
+	<!-- 날짜포멧 ( 2020-04-22 )
+		example: <include refid="localThread.YYYY_MM_DD"/> -->
+	<sql id="YYYY_MM_DD">'%Y-%m-%d'</sql>
+	
+	<!-- 날짜포멧 ( 2020-04 )
+		example: <include refid="localThread.YYYY_MM"/> -->
+	<sql id="YYYY_MM">'%Y-%m'</sql>
+	
+	<!-- 날짜포멧 ( 20200422 )
+		example: <include refid="localThread.YYYYMMDD"/> -->
+	<sql id="YYYYMMDD">'%Y%m%d'</sql>
+
+	<!-- 날짜포멧 ( 20-04-22 )
+		example: <include refid="localThread.YY_MM_DD"/> -->
+	<sql id="YY_MM_DD">'%y-%m-%d'</sql>
+
+	<!-- 날짜포멧 ( 2020 )
+		example: <include refid="localThread.YYYY"/> -->
+	<sql id="YYYY">'%Y'</sql>
+
+	<!-- 날짜포멧 ( 12 )
+		example: <include refid="localThread.MM"/> -->
+	<sql id="MM">'%m'</sql>
+
+	<!-- 날짜포멧 ( 31 )
+		example: <include refid="localThread.DD"/> -->
+	<sql id="DD">'%d'</sql>
+
+</mapper>

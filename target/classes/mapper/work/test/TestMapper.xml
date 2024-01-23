@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.work.test.mapper.TestMapper">
+
+
+
+	<select id="getTestDtTotalCount" parameterType="egovframework.work.test.model.datatable.TestDtPagingSearch"
+										  resultType="java.lang.Integer">
+		/* TestMapper.getTestTotalCount */
+		SELECT
+			COUNT(*)
+		FROM TEST_HELLO A
+		WHERE 1=1
+	<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isSearch )">
+		<if test=' search_type.equals("test_key") '>
+		AND A.test_key = #{search_text}
+		</if>
+		<if test=' search_type.equals("var1") '>
+		AND A.var1 LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("var2") '>
+		AND A.var2 LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("var3") '>
+		AND A.var3 LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+	</if>
+
+	</select>
+
+
+	<select id="getTestDtPagedList" parameterType="egovframework.work.test.model.datatable.TestDtPagingSearch"
+										  resultType="java.util.Map">
+		/* TestMapper.getTestPagedList */
+	    SELECT
+	      A.test_key
+	      ,A.var1
+	      ,A.var2
+	      ,A.var3
+	    FROM TEST_HELLO A
+		WHERE 1=1
+	<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isSearch )">
+		<if test=' search_type.equals("test_key") '>
+		AND A.test_key = #{search_text}
+		</if>
+		<if test=' search_type.equals("var1") '>
+		AND A.var1 LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("var2") '>
+		AND A.var2 LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("var3") '>
+		AND A.var3 LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+	</if>
+		<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isSort )">
+		/* 정렬 처리 */
+		ORDER BY
+		<foreach collection="sorts" item="sort" separator="," index="index">
+		${sort.columnName} ${sort.dir}
+		</foreach>
+		 , A.test_key DESC /* [필수] MASTER TABLE 에 대한 소팅 (DB NOT NULL 컬럼에 걸것) */
+		</if>
+
+		<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isPaging )">
+		/* 페이징 처리 */
+		LIMIT #{start} , #{length}
+		</if>
+
+	</select>
+
+
+
+
+	<select id="getTestJspTotalCount" parameterType="egovframework.work.test.model.jsp.TestJspPagingSearch"
+										  		resultType="java.lang.Integer">
+		/* TestMapper.getTestJspTotalCount */
+		SELECT
+			COUNT(*)
+		FROM TEST_HELLO A
+		WHERE 1=1
+	<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isSearch )">
+		<if test=' search_type.equals("test_key") '>
+		AND A.test_key = #{search_text}
+		</if>
+		<if test=' search_type.equals("var1") '>
+		AND A.var1 LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("var2") '>
+		AND A.var2 LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("var3") '>
+		AND A.var3 LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+	</if>
+	</select>
+
+	<select id="getTestJspPagedList" parameterType="egovframework.work.test.model.jsp.TestJspPagingSearch"
+										  	resultType="java.util.Map">
+		/* TestMapper.getTestJspPagedList */
+	    SELECT
+	      A.test_key
+	      ,A.var1
+	      ,A.var2
+	      ,A.var3
+	    FROM TEST_HELLO A
+	    WHERE 1=1
+	<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isSearch )">
+		<if test=' search_type.equals("test_key") '>
+		AND A.test_key = #{search_text}
+		</if>
+		<if test=' search_type.equals("var1") '>
+		AND A.var1 LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("var2") '>
+		AND A.var2 LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+		<if test=' search_type.equals("var3") '>
+		AND A.var3 LIKE CONCAT( '%', #{search_text} ,'%' )
+		</if>
+	</if>
+
+		<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isPaging )">
+		/* 페이징 처리 */
+		LIMIT #{start} , #{length}
+		</if>
+	</select>
+
+
+
+
+
+
+
+
+
+
+	<select id="getTestHelloList" parameterType="java.util.Map" resultType="java.util.Map">
+		/* TestMapper.getTestHelloList */
+		SELECT
+			 test_key
+			 ,var1
+			 ,var2
+			 ,var3
+		FROM TEST_HELLO
+	</select>
+
+
+	<insert id="addTestHello" parameterType="java.util.Map">
+		/* TestMapper.addTestHello */
+		INSERT INTO TEST_HELLO
+		(
+		  test_key
+		  ,var1
+		  ,var2
+		  ,var3
+		)
+		VALUES
+		(
+		  ( SELECT IFNULL( MAX( A.test_key + 1 ), 0 ) FROM TEST_HELLO A )
+		  ,#{var1}
+		  ,<include refid="localThread.LOGIN_ID"/>
+		  ,<include refid="localThread.REMOTE_ADDR"/>
+		)
+	</insert>
+
+</mapper>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="egovframework.work.main.mapper.KotechMainMapper">
+
+	<select id="getCourseList" resultType="java.util.Map"
+		parameterType="java.util.Map">
+		/*KotechMainMapper.getCourseList */
+		SELECT
+		fo.course_nm,
+		fo.course_seq,
+		(case
+		when
+		like_yn
+		is null
+		then 'N'
+		else 'Y'
+		end)as like_yn,
+		fo.content_seq,
+		replace(fo.vod_url, '\\', '/') as vod_url,
+		(SELECT
+		CONCAT(#{imgPath},
+		tcf.file_save_path,
+		tcf.save_filenm)
+		FROM
+		ts_cmmn_attach_file tcf
+		WHERE
+		tcf.file_reg_gb = 'TB_COURSE_THUMBNAIL'
+		AND tcf.del_yn = 'N'
+		AND tcf.tar_info_pk = fo.course_seq) file_url,
+		fo.course_descr,
+		fo.view_cnt,
+		fo.course_round,
+		fo.code_nm,
+		fo.stu_cnt,
+		IFNULL(TRUNCATE(fo.vod_time_sec / 3600, 0), '0') AS vod_hour,
+		IFNULL(TIME_FORMAT(SEC_TO_TIME(fo.vod_time_sec), '%i'),
+		'00') AS vod_min
+		FROM
+		(SELECT
+		th.course_nm,
+		th.course_seq,
+		(
+		select
+		tl.course_seq
+		from tb_course_bookmark tl
+		where
+		tl.user_id = ''
+		and tl.course_seq = th.course_seq
+		)as
+		like_yn,
+		th.course_descr,
+		th.view_cnt,
+		th.course_round,
+		th.code_nm,
+		th.stu_cnt,
+		(SELECT
+		CONCAT(#{filePath},
+		tcf.file_save_path,
+		tcf.save_filenm)
+		FROM
+		ts_cmmn_attach_file tcf
+		WHERE
+		tcf.file_reg_gb = 'TB_CONTENS_VIDEO'
+		AND tcf.del_yn = 'N'
+		AND tcf.tar_info_pk = th.content_seq) vod_url,
+		th.content_seq,
+		SUM((SELECT
+		tct.vod_time_sec
+		FROM
+		tb_contents tct
+		WHERE
+		tct.contents_seq = tcm.contents_seq)) AS vod_time_sec
+		FROM
+		(SELECT
+		se.course_nm,
+		se.course_seq,
+		(select
+		min(tcm.contents_seq)
+		from tb_contents_mapped tcm where tcm.course_seq = se.course_seq) as
+		content_seq,
+		se.course_descr,
+		se.view_cnt,
+		se.course_round,
+		se.code_nm,
+		se.stu_cnt,
+		(se.view_cnt + se.stu_cnt) AS order_cnt
+		FROM
+		(SELECT
+		tc.course_nm,
+		tc.course_seq,
+		tc.course_descr,
+		tc.view_cnt,
+		tc.course_round,
+		(SELECT
+		code_nm
+		FROM
+		tb_code
+		WHERE
+		code_seq = tc.category_seq) AS code_nm,
+		(SELECT
+		COUNT(a.learn_seq)
+		FROM
+		tb_learn a, tb_contents_mapped b
+		WHERE
+		a.contents_mapped_seq = b.contents_mapped_seq
+		AND b.course_seq = tc.course_seq) AS stu_cnt
+		FROM
+		tb_course tc
+		WHERE
+		tc.del_yn = 'N'
+		AND tc.type_seq ='186'
+        AND use_yn = 'Y'
+        AND display_yn = 'Y') se
+		ORDER BY order_cnt DESC
+		LIMIT 20) th, tb_contents_mapped tcm
+		WHERE
+		th.course_seq = tcm.course_seq
+		GROUP BY th.course_seq
+		ORDER BY RAND()
+		LIMIT 4) fo;
+
+	</select>
+
+
+	<select id="getObjectCntList" resultType="java.lang.Integer">
+		/*KotechMainMapper.getObjectCntList */
+		select
+		count(tc.course_seq) as course_totcnt
+		from
+		tb_course tc
+		where del_yn = 'N'
+		AND use_yn = 'Y'
+        AND display_yn = 'Y'
+	</select>
+
+	<select id="getStuCntList" resultType="java.lang.Integer">
+		/*KotechMainMapper.getStuCntList */
+		select
+		count(user_id)as user_totcnt
+		from
+		ts_user_info
+	</select>
+
+	<select id="getHisCntList" resultType="java.lang.Integer">
+		/*KotechMainMapper.getHisCntList */
+		select
+		count(user_id)as user_totcnt
+		from
+		tb_learn
+	</select>
+
+
+</mapper>

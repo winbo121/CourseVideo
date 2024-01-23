@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+
+<tiles-definitions>
+	 <definition name="common">
+	 		<put-attribute name="head_com_js" value="/WEB-INF/layout/common/comJs.jsp" />
+	</definition>
+
+	<!-- MOBILE & PC DEFINITAION  -->
+	<definition name="/*" extends="common" template="/WEB-INF/layout/page/mobile_pc/mobilePcLayout.jsp" >
+			<put-attribute name="body_content" 	value="/WEB-INF/jsp/{1}.jsp" />
+	</definition>
+
+	<!-- BASIC MOBILE DEFINITAION -->
+	<definition name="/*/*/_mobile" extends="common" template="/WEB-INF/layout/page/mobile/basicMobileLayout.jsp" >
+			<put-attribute name="body_header" 	value="/WEB-INF/layout/page/mobile/attribute/basicMobileHeader.jsp"/>
+	 		<put-attribute name="body_footer" 		value="/WEB-INF/layout/page/mobile/attribute/basicMobileFooter.jsp"/>
+			<put-attribute name="body_content" 	value="/WEB-INF/jsp/{1}/{2}_mobile.jsp" />
+	</definition>
+
+	<!-- BASIC PC DEFINITAION  -->
+	<definition name="/main/*" extends="common" template="/WEB-INF/layout/page/pc/basicPcLayout.jsp" >
+			<put-attribute name="body_content" 	value="/WEB-INF/jsp/main/{1}.jsp" />
+	</definition>
+	
+	<!-- BASIC PC SUB DEFINITAION  -->
+	<definition name="/*/*" extends="common" template="/WEB-INF/layout/page/pc/basicPcSubLayout.jsp" >
+			<put-attribute name="body_content" 	value="/WEB-INF/jsp/{1}/{2}.jsp" />
+	</definition>
+	
+
+	<!-- BASIC MODAL DEFINITAION   -->
+	<definition name="/*/modal/*" extends="common"  template="/WEB-INF/layout/modal/basicModalLayout.jsp">
+		<put-attribute name="body_content" value="/WEB-INF/jsp/{1}/modal/{2}.jsp" />
+	</definition>
+
+	<!-- POPUP DEFINITAION  -->
+	<definition name="/*/popup/*" extends="common" template="/WEB-INF/layout/page/pc/popupLayout.jsp" >
+			<put-attribute name="body_content" 	value="/WEB-INF/jsp/{1}/popup/{2}.jsp" />
+	</definition>
+
+	<!-- EPKI PC DEFINITAION  -->
+	<definition name="/epki/*/*" extends="common" template="/WEB-INF/layout/page/pc/basicPcLayout.jsp" >
+		<put-attribute name="body_content" 	value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+	</definition>
+
+</tiles-definitions>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    <g style="fill:#fff;stroke:#d3d3d3;opacity:.995">
+        <rect width="24" height="24" rx="5" style="stroke:none"/>
+        <rect x=".5" y=".5" width="23" height="23" rx="4.5" style="fill:none"/>
+    </g>
+    <g data-name="그룹 55">
+        <path data-name="패스 113" d="m117.856 4.705 4.6-4.593a.386.386 0 1 1 .545.547l-4.331 4.319 4.336 4.322a.386.386 0 1 1-.545.546l-4.6-4.593a.386.386 0 0 1 0-.546z" transform="translate(-108.431 7.021)" style="fill:gray;stroke:#7f8080"/>
+    </g>
+</svg>

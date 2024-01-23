@@ -1,0 +1,32 @@
+@charset "utf-8";
+
+#kice_popup .popup-init {
+	width: 100%;
+	height:100%;
+	text-align: justify;
+}
+#kice_popup .popup-init .popup-contents {
+	width: 100%;
+	line-height:1.6;
+	padding: 15px;
+	border: 1px solid #eaeaea;
+	background-color: #f8f8f8;
+	font-size: 20px;
+	box-sizing: border-box;
+	overflow-x: auto;
+	overflow-y: auto;
+}
+
+#kice_popup .popup-footer {
+	text-align: center;
+}
+
+#kice_popup .popup-init .popup-subject{
+  font-size:24px;
+  text-align:center;
+}
+
+#kice_popup .popup-init .popup-memo p {
+  font-size: 16px;
+  line-height: 1.6;
+}

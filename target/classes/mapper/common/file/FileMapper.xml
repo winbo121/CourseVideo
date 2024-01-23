@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.common.component.file.mapper.FileMapper">
+
+	<insert id="addFile"	 useGeneratedKeys="true"
+							 keyProperty="file_seq"
+							 parameterType="egovframework.common.component.file.model.FileData">
+		/* FileMapper.addFile */
+		INSERT INTO TS_CMMN_ATTACH_FILE
+		(
+			file_reg_gb
+			, tar_info_pk
+			, expo_sort
+			, orgin_filenm
+			, save_filenm
+			, file_save_path
+			, file_ext
+			, file_size
+		)
+		VALUES
+		(
+			#{file_reg_gb}
+			, #{tar_info_pk}
+			,(
+				SELECT IFNULL(  MAX( A.expo_sort ) , 0 ) +1
+				FROM TS_CMMN_ATTACH_FILE A
+				WHERE A.file_reg_gb = #{file_reg_gb}
+				AND A.tar_info_pk = #{tar_info_pk}
+				AND A.del_yn = 'N'
+		 	 )
+			, #{orgin_filenm}
+			, #{save_filenm}
+			, #{file_save_path}
+			, LOWER(#{file_ext})
+			, #{file_size}
+		)
+	</insert>
+
+
+	<update id="removeFile" parameterType="java.util.Map">
+		/* FileMapper.removeFile */
+		UPDATE TS_CMMN_ATTACH_FILE
+		SET del_yn = 'Y'
+			 ,expo_sort = NULL
+		WHERE file_reg_gb = #{file_reg_gb}
+		AND tar_info_pk = #{tar_info_pk}
+		<if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty( file_seq_list )">
+		AND file_seq IN
+			<foreach collection="file_seq_list" item="file_seq" open="(" close=")" separator="," index="index">
+				#{file_seq}
+			</foreach>
+		</if>
+	</update>
+ 	<update id="removeFiles" parameterType="list">
+		/* FileMapper.removeFiles */
+		UPDATE TS_CMMN_ATTACH_FILE
+		SET del_yn = 'Y'
+			 ,expo_sort = NULL
+		WHERE file_reg_gb = #{file_reg_gb}
+		AND tar_info_pk IN
+			<foreach collection="tar_info_pk" item="tar_info_pk" open="(" close=")" separator="," index="index">
+				#{tar_info_pk}
+			</foreach>
+		<if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty( file_seq_list )">
+		AND file_seq IN
+			<foreach collection="file_seq_list" item="file_seq_list" open="(" close=")" separator="," index="index">
+				#{file_seq_list}
+			</foreach>
+		</if>
+	</update>
+
+	<select id="getFiles" parameterType="java.util.Map"
+								resultType="egovframework.common.component.file.model.FileData" >
+		/* FileMapper.getFiles */
+		SELECT
+		  file_seq
+		  ,file_reg_gb
+		  ,tar_info_pk
+		  ,expo_sort
+		  ,orgin_filenm
+		  ,save_filenm
+		  ,file_save_path
+		  ,file_ext
+		  ,file_size
+		  ,dwld_cnt
+		  ,del_yn
+		FROM TS_CMMN_ATTACH_FILE
+		WHERE del_yn = 'N'
+	<choose>
+	<when test="@org.apache.commons.lang3.ObjectUtils@isEmpty( file_seq )">
+		AND file_reg_gb = #{file_reg_gb}
+		AND tar_info_pk = #{tar_info_pk}
+	</when>
+	<otherwise>
+		AND file_seq = #{file_seq}
+	</otherwise>
+	</choose>
+		ORDER BY expo_sort ASC
+	</select>
+
+
+	<update id="modifyExpoSort" parameterType="java.util.Map">
+		/* FileMapper.modifyExpoSort */
+		UPDATE TS_CMMN_ATTACH_FILE
+		SET expo_sort = #{expo_sort}
+		WHERE file_seq = #{file_seq}
+	</update>
+
+	<update id="modifyTableFileCnt" parameterType="java.util.Map">
+		/* FileMapper.modifyTableFileCnt */
+		UPDATE ${ file_reg_gb.table }
+		SET ${ file_reg_gb.count_table_column } = #{file_cnt}
+		WHERE ${ file_reg_gb.table_key } = #{tar_info_pk}
+	</update>
+	
+	
+	<insert id="addFileDownloadLog" parameterType="java.util.Map">
+		/* FileMapper.addFileDownloadLog */
+		INSERT INTO TS_FILE_DOWN (
+			user_id
+			,down_type
+			,regist_dt
+		)
+		VALUES (
+			<include refid="localThread.LOGIN_ID"/>
+			,#{down_type}
+			,NOW()
+		)
+	</insert>
+	
+	<select id="getDeleteFile" parameterType="java.util.Map"
+								resultType="egovframework.common.component.file.model.FileData" >
+		/* FileMapper.getDeleteFile */
+		SELECT
+		  file_seq
+		  ,file_reg_gb
+		  ,tar_info_pk
+		  ,expo_sort
+		  ,orgin_filenm
+		  ,save_filenm
+		  ,file_save_path
+		  ,file_ext
+		  ,file_size
+		  ,dwld_cnt
+		  ,del_yn
+		FROM TS_CMMN_ATTACH_FILE
+		WHERE del_yn = 'Y'
+		AND file_seq = #{file_seq}
+	</select>
+	
+	<select id="getDeleteFileSeqs" parameterType="java.util.Map"
+								resultType="java.lang.Integer" >
+		/* FileMapper.getDeleteFileSeqs */
+		SELECT
+		  file_seq
+		FROM TS_CMMN_ATTACH_FILE
+		WHERE del_yn = 'Y'
+		AND file_reg_gb = #{file_reg_gb}
+		AND tar_info_pk = #{tar_info_pk}
+	</select>
+
+
+
+</mapper>

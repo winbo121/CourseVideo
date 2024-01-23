@@ -1,0 +1,22 @@
+<svg id="ico_no_result" xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+    <defs>
+        <style>
+            .cls-1{fill:gray}
+        </style>
+    </defs>
+    <g id="그룹_578" data-name="그룹 578">
+        <g id="그룹_577" data-name="그룹 577">
+            <path id="패스_1681" data-name="패스 1681" class="cls-1" d="M8.787 8.787A29.849 29.849 0 0 1 30 0a30.549 30.549 0 0 1 3.1.159A30 30 0 0 1 60 30a29.779 29.779 0 0 1-7.581 19.933L59.485 57A1.758 1.758 0 1 1 57 59.485l-7.066-7.066A30 30 0 0 1 0 30 29.8 29.8 0 0 1 8.787 8.787zM30 56.484A26.484 26.484 0 1 0 3.516 30 26.514 26.514 0 0 0 30 56.484z"/>
+        </g>
+    </g>
+    <g id="그룹_580" data-name="그룹 580" transform="translate(28.238 15.043)">
+        <g id="그룹_579" data-name="그룹 579">
+            <path id="패스_1682" data-name="패스 1682" class="cls-1" d="M242.763 128.535a1.763 1.763 0 0 1 1.763 1.763v15.1a1.763 1.763 0 1 1-3.526 0V130.3a1.763 1.763 0 0 1 1.763-1.765z" transform="translate(-241 -128.535)"/>
+        </g>
+    </g>
+    <g id="그룹_582" data-name="그룹 582" transform="translate(28.238 41.414)">
+        <g id="그룹_581" data-name="그룹 581">
+            <circle id="타원_36" data-name="타원 36" class="cls-1" cx="1.763" cy="1.763" r="1.763"/>
+        </g>
+    </g>
+</svg>

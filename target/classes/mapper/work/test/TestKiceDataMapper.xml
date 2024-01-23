@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.work.test.mapper.TestKiceDataMapper">
+	
+	<select id="getKiceProgramBookSeqs" parameterType="egovframework.work.test.model.kicedata.SearchKiceContents"
+										resultType="java.lang.String">
+		/* KiceDataProgramMapper.getKiceProgramBookSeqs */
+		SELECT book_seq
+		FROM TS_BOOK_LIST
+		WHERE book_name LIKE concat( '%', #{search_book_name} , '%' ) 
+		<if test="@org.apache.commons.lang3.BooleanUtils@isTrue( isPublisher )">
+			AND publisher = #{search_publisher}
+		</if>
+		ORDER BY book_seq ASC
+	</select>
+	
+	
+	<insert id="registKiceData" parameterType="egovframework.work.test.model.kicedata.RegistKiceData">
+		/* KiceDataProgramMapper.registKiceData */
+		INSERT INTO TS_KICE_DATA (
+			  book_seq
+			, book_keyword
+			, intro_reason
+			, book_recomm_rect
+			, book_recommend
+			, textbook_link
+			, words_activity
+			, regist_dt
+			, modify_dt
+		)
+		VALUES (
+			#{book_seq}
+			, #{book_keyword}
+			, #{intro_reason}
+			, #{book_recomm_rect}
+			, #{book_recommend}
+			, #{textbook_link}
+			, #{words_activity}
+			, NOW()
+			, NOW()
+		)
+	</insert>
+
+</mapper>

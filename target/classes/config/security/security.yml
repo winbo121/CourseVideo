@@ -1,0 +1,26 @@
+#####################################################################
+# SPRING SECURITY (com.kicebook.config.security.attribute.SecurityAttribute)
+#####################################################################
+login_default_target_url: /index.do
+login_max_inactive_interval: 3600
+login_default_fail_url: /index.do
+login_form_url: /login.do
+ajax_login_url: /ajax_login.do
+login_username: user_id
+login_password: user_pw
+logout_url: /logout.do
+logout_default_target_url: /index.do
+access_denied_url: /access_denied.do
+session_expired_url: /index.do
+maximum_sessions: 1
+request_matcher_type: ant
+use_sniff: true
+use_xss_protection: true
+x_frame_option: SAMEORIGIN
+use_csrf: true
+ignore_list: [  { matcher_type: ant ,http_method: GET ,pattern: /resources/**  } 
+                 ,{ matcher_type: ant ,http_method: GET ,pattern: /css/**  }
+                 ,{ matcher_type: ant ,http_method: GET ,pattern: /js/**  }
+                 ,{ matcher_type: ant ,http_method: GET ,pattern: /img/**  }
+                 ,{ matcher_type: ant ,http_method:  ,pattern: /**/favicon.ico  }
+               ]

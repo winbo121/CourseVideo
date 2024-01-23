@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.common.component.scheduler.mapper.WebLogSchedulerMapper">
+
+	<select id="getScheduler" parameterType="java.lang.Integer" resultType="java.util.Map">
+		/* WebLogSchedulerMapper.getScheduler */
+		SELECT 
+		    scheduler_type
+		    , day
+		    , hour
+		    , minute
+		FROM
+		    tb_scheduler
+		WHERE
+		    scheduler_seq = #{scheduler_seq}
+	</select>
+
+	<update id="callActiveLog" parameterType="java.util.Map">
+		/* WebLogSchedulerMapper.callActiveLog */
+		call batch_active_log(#{conn_ip}, #{conn_uri}, #{reg_dts}, #{conn_way}, #{active_seq}, #{login_yn}, #{user_id}, #{time_on_page}, #{course_seq});
+	</update>
+	
+	<insert id="addSchedulerLog" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="scheduler_log_seq" keyColumn="scheduler_log_seq">
+		/* WebLogSchedulerMapper.addSchedulerLog */
+		INSERT INTO TB_SCHEDULER_LOG (
+			scheduler_seq
+		)
+		VALUES (
+			#{scheduler_seq}
+		)
+	</insert>
+	
+	<insert id="addSchedulerActiveLog" parameterType="java.util.Map" useGeneratedKeys="true" keyProperty="schedulerActiveLogSeq" keyColumn="scheduler_log_seq">
+		/* WebLogSchedulerMapper.addSchedulerActiveLog */
+		INSERT INTO TB_SCHEDULER_ACTIVE_LOG (
+			scheduler_log_seq
+		)
+		VALUES (
+			#{scheduler_log_seq}
+		)
+	</insert>
+	
+	<insert id="updateSchedulerLog" parameterType="java.util.Map">
+		/* WebLogSchedulerMapper.updateSchedulerLog */
+		UPDATE TB_SCHEDULER_LOG
+		SET success_yn = #{success_yn}
+			, upd_dts = NOW()
+		WHERE scheduler_log_seq = #{scheduler_log_seq} 
+	</insert>
+	
+	<insert id="updateSchedulerActiveLog" parameterType="java.util.Map">
+		/* WebLogSchedulerMapper.updateSchedulerActiveLog */
+		UPDATE TB_SCHEDULER_ACTIVE_LOG
+		SET success_cnt = #{success_cnt}
+			, fail_cnt = #{fail_cnt}
+			, upd_dts = NOW()
+		WHERE scheduler_active_log_seq = #{scheduler_active_log_seq} 
+	</insert>
+	
+	<insert id="addSchedulerFailLog" parameterType="java.util.Map">
+		/* WebLogSchedulerMapper.addSchedulerFailLog */
+		INSERT INTO TB_SCHEDULER_ACTIVE_FAIL_LOG (
+			scheduler_active_log_seq
+			,file_line
+		)
+		VALUES (
+			#{scheduler_active_log_seq}
+			,#{file_line}
+		)
+	</insert>
+	
+
+</mapper>

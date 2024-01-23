@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.config.security.secured.SecuredMapper">
+
+	<!-- SPRING SECURITY 사용할 ROLE 조회  -->
+	<select id="listSecurityRole" parameterType="java.util.Map"
+								   resultType="egovframework.config.security.secured.model.SecurityRole">
+		/* SpringSecurityMapper.listSecurityRole */
+
+		SELECT
+		 A.URL_PTTRN AS TARGET
+		 ,B.URL_ROLE AS AUTHORITY
+		FROM TS_URL_INFO A INNER JOIN TS_URL_ROLE B
+		                    ON A.URL_CODE = B.URL_CODE
+	</select>
+
+
+	<!-- SPRING SECURITY ROLE 의 계층구조 -->
+	<select id="hierarchicalRoles" parameterType="java.util.Map"
+									resultType="egovframework.config.security.secured.model.SecurityHierarch">
+		/* SpringSecurityMapper.hierarchicalRoles */
+		SELECT
+				 A.CHLDRN_ROLE as CHILD
+				, A.PARNTS_ROLE as PARENT
+		FROM TS_ROLE_HIERARCHY A
+	</select>
+
+
+	<select id="userByUsername" parameterType="java.util.Map"
+										resultType="egovframework.config.security.secured.model.SecurityUser">
+		/* SpringSecurityMapper.userByUsername */
+		SELECT
+			 USR.user_id
+			,USR.user_name
+			,(case 
+            when USR.role_type = 'ROLE_ADMIN'
+            then '관리자'
+            when USR.role_type = 'ROLE_USER'
+            then '학습자'
+            end) as role_type
+			,USR.user_pw
+			,USR.user_state_cd
+			,IFNULL( USR.badge_grade, '1' ) AS badge_grade
+			,user_email
+			,USR.user_profile
+			,USR.gender
+			,TRUE enabled
+		FROM TS_USER_INFO USR 
+		WHERE USR.user_id = #{user_id}
+		AND USR.del_yn = 'N'
+
+	</select>
+
+
+	<select id="authoritiesByUsername" parameterType="java.util.Map"
+												resultType="java.lang.String">
+		/* SpringSecurityMapper.authoritiesByUsername */
+		SELECT
+	      USR.ROLE_TYPE
+	    FROM TS_USER_INFO USR
+	    WHERE USR.user_id = #{user_id}
+	</select>
+
+	<update id="modifyFirstLoginDt" parameterType="java.util.Map">
+		/* SpringSecurityMapper.modifyFirstLoginDt */
+		UPDATE TS_USER_INFO
+		SET first_login_dt = NOW()
+		WHERE user_id = #{user_id}
+		AND first_login_dt IS NULL
+	</update>
+
+
+	<update id="modifyLastLoginDt" parameterType="java.util.Map">
+		/* SpringSecurityMapper.modifyLastLoginDt */
+		UPDATE TS_USER_INFO
+		SET last_login_dt = NOW()
+		WHERE user_id = #{user_id}
+	</update>
+
+	<insert id="addLoginLog" parameterType="java.util.Map">
+		/* SpringSecurityMapper.addLoginLog */
+	INSERT INTO TS_USER_LOG
+	(
+		user_id
+		,conn_ip
+		,conn_dt
+	)
+	VALUES
+	(
+		#{user_id}
+		,#{remote_addr}
+		,NOW()
+	)
+
+	</insert>
+
+
+</mapper>

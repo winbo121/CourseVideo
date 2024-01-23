@@ -1,0 +1,181 @@
+
+@charset "utf-8";
+
+
+.lets_header {height:60px; background-color:#f5f5f5; padding:0 20px;}
+.lets_header h2 {float: left; height: 60px; line-height:60px; font-size:18px; font-weight: normal; letter-spacing:-1.5px; width:60%; display: -webkit-box; overflow: hidden; -webkit-line-clamp: 1; -webkit-box-orient: vertical;}
+.lets_header h2 a {display: inline-block; line-height:60px; font-size:18px; font-weight: normal; letter-spacing:-1.5px; width:100%; display: -webkit-box; overflow: hidden; -webkit-line-clamp: 1; -webkit-box-orient: vertical;}
+.lets_header h2 .used_condition {display: inline-block; font-size: 14px; color: #555; padding-left: 10px; vertical-align: top;}
+.lets_header ul {float: right; max-width:315px;}
+.lets_header li {display: inline-block; margin-right:24px;}
+.lets_header li:last-child{margin-right:0;}
+.lets_header li a { display: inline-block; height:60px; padding-top:20px; padding-bottom:20px; box-sizing: border-box;}
+/* .lets_header .book a {background: url(http://image.aladin.co.kr/img/svg/lets_book.svg) no-repeat left 15px; background-size:auto 30px; padding-left:34px;}
+.lets_header .ebook a {background: url(http://image.aladin.co.kr/img/svg/lets_ebook.svg) no-repeat left 15px; background-size:auto 30px; padding-left:23px;}
+.lets_header .audio a {background: url(http://image.aladin.co.kr/img/svg/lets_audio.svg) no-repeat left 15px; background-size:auto 30px; padding-left:34px;} */
+.lets_header li.on a { color: #0fa8ff; font-weight: bold;}
+
+/* .lets_header .book.on a {background: url(http://image.aladin.co.kr/img/svg/lets_book_on.svg) no-repeat left 15px; background-size:auto 30px; padding-left:34px;}
+.lets_header .ebook.on a {background: url(http://image.aladin.co.kr/img/svg/lets_ebook_on.svg) no-repeat left 15px; background-size:auto 30px; padding-left:23px;}
+.lets_header .audio.on a {background: url(http://image.aladin.co.kr/img/svg/lets_audio_on.svg) no-repeat left 15px; background-size:auto 30px; padding-left:34px;} */
+.lets_header::after { content:''; display: block; clear: both;}
+
+.lets_header .zoom_btn {position: absolute; right: 0; top: 0;}
+.lets_header .zoom_btn a {float: left; display:block; width:80px; height:60px; font-size: 1px; color: transparent; position: relative;}
+/* .lets_header .zoom_btn .zoomin {background:url(../../../image.aladin.co.kr/img/shop/2020/lets_zoomin.png) no-repeat center ;} */
+.lets_header .zoom_btn .zoomin::after {content:''; position: absolute; right:0; top:15px; width:1px; height:30px; background-color:#dfdfdf;}
+/* .lets_header .zoom_btn .zoomout {background:url(../../../image.aladin.co.kr/img/shop/2020/lets_zoomout.png) no-repeat center;}
+.lets_header .zoom_btn .zoomin:hover {background:url(../../../image.aladin.co.kr/img/shop/2020/lets_zoomin_on.png) no-repeat center;}
+.lets_header .zoom_btn .zoomout:hover {background:url(../../../image.aladin.co.kr/img/shop/2020/lets_zoomout_on.png) no-repeat center;} */
+
+/* IE10+ */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+.lets_header li {display: inline-block; margin-right:10px;}
+.lets_header li:nth-child(1) a , .lets_header li.on:nth-child(1) a {padding-left:42px;}
+.lets_header li:nth-child(2) a , .lets_header li.on:nth-child(2) a {padding-left:35px;}
+.lets_header li:nth-child(3) a , .lets_header li.on:nth-child(3) a {padding-left:44px;}
+}
+
+.lets_contents .left_cont { float: left; height:calc(100vh - 60px);  box-sizing: border-box; overflow-x:auto; font-size:14px; line-height:1.8em; position: relative;}
+.lets_contents .right_menu {width:230px; height:calc(100vh - 60px); border-left:1px #e2e2e2 solid; padding:0 20px; box-sizing: border-box; position: absolute; right:0;}
+.lets_contents .right_menu h3 {color: #0fa8ff; font-weight: bold; font-size:16px; padding:20px 0 10px 0;}
+/* .lets_contents .right_menu ol li { background:url(http://image.aladin.co.kr/img/svg/dot_black.svg) no-repeat left 8px; background-size:4px 4px; padding:0 5px 8px 10px; font-size:14px; } */
+.lets_contents .right_menu ol li a:hover {text-decoration: underline;}
+/* .lets_contents .right_menu p {background: url(../../../image.aladin.co.kr/img/shop/2020/letslook_dotted.gif) repeat-y; line-height:28px; font-size:15px; display: -webkit-box; overflow: hidden; -webkit-line-clamp:8; -webkit-box-orient: vertical;} */
+.lets_contents .right_menu .menu_bottom { position: absolute; bottom:0; padding-bottom:20px; background-color:#fff;}
+.lets_contents .right_menu .zoom_btn li { display: inline-block; text-indent: -9999px; position: relative;  width:50%; cursor: pointer;}
+.lets_contents .right_menu .zoom_btn li a { display: inline-block; width:100%; height:50px; }
+/* .lets_contents .right_menu .zoom_btn li:nth-child(1) {background:url(../../../image.aladin.co.kr/img/shop/2020/lets_zoomin.png) no-repeat center #fff;} */
+.lets_contents .right_menu .zoom_btn li:nth-child(1)::after {content:''; position: absolute; right:0; top:10px; width:1px; height:30px; background-color:#dfdfdf;}
+/* .lets_contents .right_menu .zoom_btn li:nth-child(2) {background:url(../../../image.aladin.co.kr/img/shop/2020/lets_zoomout.png) no-repeat center #fff;}
+.lets_contents .right_menu .zoom_btn li:nth-child(1):hover {background:url(../../../image.aladin.co.kr/img/shop/2020/lets_zoomin_on.png) no-repeat center;}
+.lets_contents .right_menu .zoom_btn li:nth-child(2):hover {background:url(../../../image.aladin.co.kr/img/shop/2020/lets_zoomout_on.png) no-repeat center;} */
+
+.lets_contents .right_menu .font_zoom li { display: inline-block; text-indent: -9999px; position: relative;  width:50%; cursor: pointer;}
+.lets_contents .right_menu .font_zoom li a { display: inline-block; width:100%; height:50px; }
+/* .lets_contents .right_menu .font_zoom li:nth-child(1) {background:url(../../../image.aladin.co.kr/img/shop/2020/lets_zoomoutfont.png) no-repeat center #fff;} */
+.lets_contents .right_menu .font_zoom li:nth-child(1)::after {content:''; position: absolute; right:0; top:10px; width:1px; height:30px; background-color:#dfdfdf;}
+/* .lets_contents .right_menu .font_zoom li:nth-child(2) {background:url(../../../image.aladin.co.kr/img/shop/2020/lets_zoominfont.png) no-repeat center #fff;}
+.lets_contents .right_menu .font_zoom li:nth-child(1):hover {background:url(../../../image.aladin.co.kr/img/shop/2020/lets_zoomoutfont_on.png) no-repeat center;}
+.lets_contents .right_menu .font_zoom li:nth-child(2):hover {background:url(../../../image.aladin.co.kr/img/shop/2020/lets_zoominfont_on.png) no-repeat center;} */
+
+
+.lets_contents .right_menu .pagenum { background-color:#a2a2a2; height:34px; width:190px; border-radius:17px; text-align: center; line-height:34px; color:#fff; margin-top:15px;}
+.lets_contents::after { content:''; display: block; clear: both;}
+
+.lets_contents .right_menu .page_view { display: flex; justify-content: space-between; margin-top:18px;}
+.lets_contents .right_menu .page_view li a {display: block; width:90px; height:60px; text-align: center; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; padding:7px 0; box-sizing: border-box;}
+.lets_contents .right_menu .page_view li a.page2.off {opacity:0.5; background-color:#f5f5f5;}
+.lets_contents .right_menu .page_view li a.page2::before , .lets_contents .right_menu .page_view li a.page1::before {content:''; display:block; width:100%; height:25px; margin:0 auto 5px auto;}
+/* .lets_contents .right_menu .page_view li a.page2::before {background:url(http://image.aladin.co.kr/img/svg/icon_page2.svg) no-repeat center / 35px 25px;}
+.lets_contents .right_menu .page_view li a.page1::before {background:url(http://image.aladin.co.kr/img/svg/icon_page1.svg) no-repeat center / 18px 25px;} */
+
+.lets_contents .right_menu .page_view li a.on {background: #0fa8ff; color:#fff; border: none;}
+/* .lets_contents .right_menu .page_view li a.on.page2::before {background:url(http://image.aladin.co.kr/img/svg/icon_page2_w.svg) no-repeat center / 35px 25px;}
+.lets_contents .right_menu .page_view li a.on.page1::before {background:url(http://image.aladin.co.kr/img/svg/icon_page1_w.svg) no-repeat center / 18px 25px;} */
+.lets_contents .right_menu .page_view .off {opacity:0.5;}
+
+.letslook_book { margin:2.5em auto; position: relative;}
+.letslook_book section {position: absolute; left:0; top:0; perspective:300em;}
+.letslook_book section::after {content:''; display: block; clear: both;}
+.letslook_book .leftpage { float: left; border:1px solid #dddddd; border-right: none; cursor: pointer; overflow: hidden;}
+.letslook_book .rightpage {float: left; border:1px solid #dddddd; cursor: pointer; position: relative;  overflow: hidden;}
+.letslook_book .bookspine {float: left; border:1px solid #dddddd; border-right: none; }
+.letslook_book::after {content:''; display: block; clear: both;}
+
+.letslook_book .bookspine img { width:100%; height:100%;}
+.letslook_book .leftpage img , .letslook_book .rightpage img {width:100%; height: auto;}
+.letslook_book .leftpage.book_w { text-align: left; background-color:#fff;}
+.letslook_book .leftpage.book_w img { width: auto; height:100%;}
+.letslook_book .rightpage.book_w {text-align: right; background-color:#fff; }
+.letslook_book .rightpage.book_w img { width: auto; height:100%;}
+
+.letslook_book .prev_btn {width:200px; height:400px; opacity:0.4; position: absolute; left:-70px; top:50%; transform: translateY(-50%); z-index:10; background: url(../images/book/left_allow.svg) no-repeat center / 28px 46px; color: transparent; font-size: 0px; z-index:10; cursor: pointer;}
+.letslook_book .next_btn {width:200px; height:400px; opacity:0.4; position: absolute; right:-70px; top:50%; transform: translateY(-50%);  z-index:10; background: url(../images/book/right_allow.svg) no-repeat center / 28px 46px; color: transparent; font-size: 0px;  z-index:10; cursor: pointer;}
+
+.flipRight { animation: flipRight 0.4s linear; transition: all; transform-origin: left; transform: rotateY(-180deg); }
+.flipRback {animation: flipRBack 0.4s linear;  transition: all; transform-origin: right; transform: rotateY(0deg);}
+.flipLeft { animation: flipLeft 0.4s linear; transition: all; transform-origin: right; transform: rotateY(180deg); }
+.flipLback {animation: flipLback 0.4s linear;  transition: all; transform-origin: left; transform: rotateY(0deg);}
+.show { display: block;}
+.hide { display: none;}         
+
+@keyframes flipRight {
+   0% { transform: rotateY(0deg); opacity:1;}
+   50% { transform: rotateY(-90deg); opacity:1;}
+   51% { opacity:0;}
+   100% { transform: rotateY(-180deg); opacity:0;}
+}
+@keyframes flipRBack {
+   0% { transform: rotateY(180deg); opacity:0;}
+   50% { transform: rotateY(90deg); opacity:0;}
+   51% {opacity:1;}
+   100% {transform: rotateY(0deg); opacity:1}
+} 
+@keyframes flipLeft {
+   0% { transform: rotateY(0deg); opacity:1;}
+   50% { transform: rotateY(90deg); opacity:1;}
+   51% { opacity:0;}
+   100% { transform: rotateY(180deg); opacity:0;}
+}
+@keyframes flipLback {
+   0% { transform: rotateY(-180deg); opacity:0;}
+   50% { transform: rotateY(-90deg); opacity:0;}
+   51% {opacity:1;}
+   100% {transform: rotateY(0deg); opacity:1}
+}  
+
+.audio_book { position: absolute; top:75px; left:50%; transform: translateX(-50%); z-index:99; background-color: #ececec; border:1px #d6d6d6 solid; box-shadow: 3px 5px 8px rgba(0, 0, 0, 0.3); width:95%; height:84px; padding:0 35px 0 20px; box-sizing: border-box; display: flex;}
+
+.audio_book .bar {background-color: #fff; height:6px; margin:39px 0; width:100%;}
+.audio_book .bar .bar_ing { height:6px; background-color: #00b4ff; position: relative;}
+.audio_book .bar .bar_ing .bar_circle {background:#00b4ff; position:absolute; border-radius:10px; width:20px; height:20px; right:-20px; top:50%; transform: translateY(-50%);}
+.audio_book .time {width:130px; padding-left:10px; box-sizing: border-box; margin:30px 0; text-align: center; flex-shrink:0;}
+.audio_book .btn {width:43px; height:43px; margin:19px 0; text-align: right;  flex-shrink:0;}  
+.audio_book .btn img {height:100%;}
+/* .audio_book .close {background: url(http://image.aladin.co.kr/img/svg/close_b.svg) no-repeat center / 17px 17px; width:30px; height:30px; position: absolute; right:2px; top:2px; border:none; outline: 0; cursor: pointer; opacity:0.8; font-size:1px; color: transparent; overflow: hidden;} */
+
+.letslook_music {margin:10px auto; position: relative; width:800px;}
+.letslook_music .btn_next { position: absolute; width:45%; height:100%; right:0; top:0; background:url(../images/book/right_allow.svg) no-repeat center right 20px ; background-size:28px auto; text-indent: -9999px; opacity: 0.2;}
+.letslook_music .btn_right {position: absolute; width:45%; height:100%; left:0; top:0; background:url(../images/book/left_allow.svg) no-repeat center left 20px ; background-size:28px auto;  text-indent: -9999px; opacity: 0.2;}
+.letslook_music .pagenum { position: absolute; right:-110px; bottom:10px; background-color:#a2a2a2; height:34px; width:100px; border-radius:17px; text-align: center; line-height:34px; color:#fff; margin-top:15px;}
+.letslook_music section img {width:100%;}
+
+.letslook_ebook {width:80%; height:90%; margin:2em auto; border:1px #ccc solid; padding:60px 70px; box-sizing: border-box; position: relative; }
+.letslook_ebook .ebook_box { width:100%; height:100%; column-count:2; -moz-column-count: 2;  -webkit-column-count: 2; -moz-column-gap: 2.2em; -webkit-column-gap: 8.5em; column-gap: 8.5em; column-fill:auto; overflow: hidden;}
+.letslook_ebook .ebook_box::after {content:''; width:1px; height:100%; background: #ccc; position: absolute; left:50%; top:0;}
+
+.letslook_ebook .next_btn a { position: absolute; display: block; top:0; right:0; height:100%; width:40%; background: url(../images/book/right_allow.svg) no-repeat center right 20px; background-size:24px auto; opacity:0.2; text-indent: -9999px;}
+
+.letslook_ebook .prev_btn a { position: absolute; display: block; top:0; left:0; height:100%; width:40%; background: url(../images/book/left_allow.svg) no-repeat center left 20px; background-size:24px auto; opacity:0.2; text-indent: -9999px;}
+
+.guide_layer { position: absolute; top:50%; left:50%; transform:translate(-50%, -50%); background-color: rgba(0, 0, 0, 0.8); width:200px; height:200px; border-radius:50%; color:#fff553; padding:65px 20px 0; box-sizing: border-box; letter-spacing:-0.8px; text-align: center; word-break: keep-all; line-height:24px; z-index:10;}
+
+/* 한면 보기 */
+.letslook_book_onepage { margin:2.5em auto; position: relative; text-align: center;}
+.letslook_book_onepage .page img { width:100%; border:1px #ddd solid; cursor: pointer;}
+.letslook_book_onepage .prev_btn {width:70px; height:100px; opacity:0.4; position: absolute; left:-80px; top:120px;}
+.letslook_book_onepage .prev_btn a {display: block; width:100%; height:100%; background: url(../images/book/left_allow.svg) no-repeat center / 28px 46px; color: transparent; font-size: 0px;}
+.letslook_book_onepage .next_btn {width:70px; height:100px; opacity:0.4; position: absolute; right:-80px; top:120px;}
+.letslook_book_onepage .next_btn a {display: block; width:100%; height:100%; background: url(../images/book/right_allow.svg) no-repeat center / 28px 46px; color: transparent; font-size: 0px;}
+
+/* 중고 */
+.letslook_used { margin:2.5em auto; position: relative; text-align: center;}
+.letslook_used .page img { width:100%; border:1px #ddd solid; cursor: pointer;}
+.letslook_used .prev_btn {width:70px; height:100px; opacity:0.4; position: absolute; left:-80px; top:50%; transform: translateY(-50%);}
+.letslook_used .prev_btn a {display: block; width:100%; height:100%; background: url(../images/book/left_allow.svg) no-repeat center / 28px 46px; color: transparent; font-size: 0px;}
+.letslook_used .next_btn {width:70px; height:100px; opacity:0.4; position: absolute; right:-80px; top:50%; transform: translateY(-50%);}
+.letslook_used .next_btn a {display: block; width:100%; height:100%; background: url(../images/book/right_allow.svg) no-repeat center / 28px 46px; color: transparent; font-size: 0px;}
+
+/*로딩이미지*/
+.letslook_loading {position: absolute; left:50%; top: 50%; transform: translate(-50% , -50%);}
+.letslook_loading span {position: absolute; top:50%; width:10px; height:10px; border-radius:100%; transform: translate(-50%, -50%); animation: letslook_loading infinite .8s;}
+.letslook_loading span:nth-child(1) {background-color: #3b499e; left:calc(50% - 15px);}
+.letslook_loading span:nth-child(2) {background-color: #f21d8c; left:50%; animation-delay: .2s;}
+.letslook_loading span:nth-child(3) {background-color:#ffa600; left:calc(50% + 15px);  animation-delay: .4s;}
+@keyframes letslook_loading {
+    0% { top:50%;}
+    20% {top:calc(50% - 5px);}                       
+    50% { top:50%;}            
+    100% { top:50%;}
+}

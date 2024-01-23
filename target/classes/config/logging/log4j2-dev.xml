@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+
+ 	<!--    해당 설정파일에서 사용하는 프로퍼티-->
+    <Properties>
+        <Property name="logNm">Spring Log4j2 Test</Property>
+        <Property name="layoutPattern">%style{%d{yyyy/MM/dd HH:mm:ss,SSS}}{cyan} %highlight{[%-5p]}{FATAL=bg_red, ERROR=red, INFO=green, DEBUG=blue}  [%C] - %m%n </Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+             <PatternLayout pattern="${layoutPattern}"/>
+        </Console>
+        
+        <!-- attribute: name(Appender명), fileName(target파일명), filePattern(history파일명), append, immediateFlush, ignoreExceptions, bufferedIO -->
+		<!-- element: Layout(출력패턴설정), Filters, Policy(file rolling 조건 설정), Strategy(file name과 location 관련 설정) -->
+		<RollingFile name="rollingFile" fileName="D:\KotechLms_log/dailyRollingSample.log" filePattern="D:\KotechLms_log/daily/dailyRollingSample.log.%d{yyyy-MM-dd}">
+			<PatternLayout pattern="%m%n"/>
+			<Policies>
+				<TimeBasedTriggeringPolicy/>
+			</Policies>
+		</RollingFile>
+    </Appenders>
+
+
+
+    <Loggers>
+<!--         <Logger name="java.sql" level="DEBUG" additivity="false"> -->
+<!--             <AppenderRef ref="console" /> -->
+<!--         </Logger> -->
+		<logger name="jdbc.sqlonly" level="DEBUG" additivity="false" >
+			<AppenderRef ref="console"/>
+		</logger>
+
+        <Logger name="egovframework" level="DEBUG" additivity="false">
+            <AppenderRef ref="console" />
+        </Logger>
+		  <!-- log SQL with timing information, post execution -->
+	    <Logger name="jdbc.sqltiming" level="DEBUG" additivity="false">
+	        <AppenderRef ref="console" />
+	    </Logger>
+
+		<Logger name="org.mybatis" level="ERROR" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+
+		<Logger name="org.apache.ibatis.logging.jdbc" level="DEBUG" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+
+		<Logger name="org.springframework" level="INFO" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+
+	    <Logger name="egovframework.config.security" level="INFO" additivity="false">
+	        <AppenderRef ref="console" />
+	    </Logger>
+
+	    <Logger name="egovframework.common" level="DEBUG" additivity="false">
+	        <AppenderRef ref="console" />
+	    </Logger>
+	    <Logger name="egovframework.work" level="DEBUG" additivity="false">
+	        <AppenderRef ref="console" />
+	    </Logger>
+	    <Logger name="org.apache.commons.digester.Digester" level="ERROR" additivity="false">
+	    	 <AppenderRef ref="console" />
+	    </Logger>
+
+		<Logger name="web.log" level="INFO" additivity="false">
+	        <AppenderRef ref="rollingFile" />
+	    </Logger>
+
+
+        <Root level="DEBUG">
+            <AppenderRef ref="console" />
+        </Root>
+    </Loggers>
+</Configuration>
