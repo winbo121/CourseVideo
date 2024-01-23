@@ -1,0 +1,22 @@
+# backupFile
+.gitignore.bak
+readMe.md.bak
+
+
+# sbteclipse plugin
+target
+
+
+# sample SQL QUERY
+sample_sql.txt
+
+# STS (Spring Tool Suite)
+.springBeans
+
+### Eclipse Core
+.project
+ ### JDT-specific (Eclipse Java Development Tools)
+.classpath
+ ### Eclipse
+.settings/
+pom.xml
