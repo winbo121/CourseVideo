@@ -20,7 +20,7 @@ public class IsProfileTag extends ConditionalTagSupport {
 	@Setter
 	private String target_profiles;
 
-	private static final String SPRING_PROFILE = "spring.profiles";
+	private static final String SPRING_PROFILE = "local";
 
 	@Override
 	protected boolean condition() throws JspTagException {

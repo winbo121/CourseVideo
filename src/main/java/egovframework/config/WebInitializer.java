@@ -55,7 +55,7 @@ public class WebInitializer implements WebApplicationInitializer  {
 	@Override
 	public void onStartup( ServletContext servletContext ) throws ServletException {
 
-		String active_profile = servletContext.getInitParameter("spring.profiles.active");
+		String active_profile = servletContext.getInitParameter("local");
 		System.out.println( " ##### LOG4J2 SET CONFIGLOCATION" );
 		this.log4j2Configlocation( active_profile );
 
@@ -189,7 +189,7 @@ public class WebInitializer implements WebApplicationInitializer  {
 
 	private void log4j2Configlocation( String active_profile ) {
 		try {
-			String location = StringUtils.replaceOnce(  Constrants.LOG4J2_CONFIG_LOCATION, "${spring.profiles.active}", active_profile);
+			String location = StringUtils.replaceOnce(  Constrants.LOG4J2_CONFIG_LOCATION, "local", active_profile);
 			System.out.println( " ##### LOG4J2 CONFIG FILE: "+ location );
 
 			Resource resource = ConfigUtils.getResource( location );

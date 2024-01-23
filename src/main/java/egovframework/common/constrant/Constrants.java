@@ -50,7 +50,7 @@ public class Constrants {
 
 
 	/** 프레임 워크 기본 설정 **/
-	public static final String CONFIG_LOCATION = "classpath:config/initialize/config-${spring.profiles.active}.properties";
+	public static final String CONFIG_LOCATION = "classpath:config/initialize/config-local.properties";
 	/** SPRING SECURITY 설정 경로 **/
 	public static final String SECURITY_LOCATION = "classpath:config/security/security.yml";
 
@@ -68,7 +68,7 @@ public class Constrants {
 	public static final List<String> TILES_CONFIG_LOCATIONS = Lists.newArrayList( "classpath:config/tiles/templates.xml");
 
 	/** LOG4J2 설정 경로 **/
-	public static final String LOG4J2_CONFIG_LOCATION = "classpath:config/logging/log4j2-${spring.profiles.active}.xml";
+	public static final String LOG4J2_CONFIG_LOCATION = "classpath:config/logging/log4j2-local.xml";
 
 	/** SITE MESH 설정 경로 **/
 	@Deprecated
