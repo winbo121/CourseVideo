@@ -51,3 +51,9 @@ plugins/org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_15.0.2.v20210201
 .classpath  
 ### Eclipse  
 .settings/  
+
+# 강의 업로드된 영상또는 사진 조회
+### Tomcat에 server.xml 에 <Engine></Engine> 안에 추가할 내용
+
+<Context docBase="D:/KOTECH/REPOSITORY/IMAGES" path="/REPOSITORY/IMAGES" reloadable="true"/>
+<Context docBase="D:/KOTECH/REPOSITORY/FILES" path="/REPOSITORY/FILES" reloadable="true"/>
