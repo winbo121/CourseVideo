@@ -53,7 +53,7 @@ plugins/org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_15.0.2.v20210201
 .settings/  
 
 ### 강의 업로드된 영상 또는 사진조회 
-톰캣에 server.xml에 맨밑 Engin에 추가하기
+톰캣에 server.xml에 맨밑 Engin에 Host 안에 추가하기
 
 ```
 <Context docBase="D:/KOTECH/REPOSITORY/IMAGES" path="/REPOSITORY/IMAGES" reloadable="true"/>
