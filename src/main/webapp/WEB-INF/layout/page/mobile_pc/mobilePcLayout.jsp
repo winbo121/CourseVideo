@@ -21,7 +21,7 @@
 	<meta name="_device_is_normal" content="${currentDevice.normal}">
 </c:if>
     <sec:csrfMetaTags/>
-	<title>KOTECH_LMS</title>
+	<title>LMS</title>
 	<tiles:insertAttribute  name="head_com_js" /> <%-- 공통 스크립트 함수 --%>
 
     <!--re-modal -->

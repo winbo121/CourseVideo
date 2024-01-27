@@ -153,7 +153,7 @@ $(document).ready (function(){
 								<img src="/assets/img/login-img.png" class="img-fluid" alt="Logo">
 							</div>
 							<div class="mentor-course text-center">
-								<h2>Welcome to <br>KOTECH LMS Courses.</h2>
+								<h2>Welcome to <br>LMS Courses.</h2>
 								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
 							</div>
 						</div>
@@ -162,7 +162,7 @@ $(document).ready (function(){
 								<img src="/assets/img/login-img.png" class="img-fluid" alt="Logo">
 							</div>
 							<div class="mentor-course text-center">
-								<h2>Welcome to <br>KOTECH LMS Courses.</h2>
+								<h2>Welcome to <br>LMS Courses.</h2>
 								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
 							</div>
 						</div> -->
@@ -177,7 +177,7 @@ $(document).ready (function(){
 						<div class="loginbox">
 							<div class="w-100">
 								<div class="img-logo">
-									<img src="/assets/img/logo.png" class="img-fluid" alt="Logo">
+<!-- 									<img src="/assets/img/logo.png" class="img-fluid" alt="Logo"> -->
 									<div class="back-home">
 										<a href="/">메인화면으로</a>
 									</div>

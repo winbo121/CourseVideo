@@ -514,7 +514,7 @@
 						<!-- Col -->
                         <div class="col-xl-3 col-lg-12 col-md-12" data-aos="fade-down">
 							<div class="acheive-goals-main">
-								<h2>KOTECH LMS와 함께 목표를 달성하세요</h2>
+								<h2>LMS와 함께 목표를 달성하세요</h2>
 							</div>
 						</div>
 						<!-- /Col -->
@@ -541,7 +541,7 @@
 								</div>
 								<div class="acheive-goals-content text-center course-count ms-0">
 									<h4><span data="${course_totcnt }" class="counterUp">${course_totcnt }</span></h4>
-									<p>KOTECH 플랫폼에<br> 등록된 총 강좌</p>
+									<p>플랫폼에<br> 등록된 총 강좌</p>
 								</div>
 							</div>
 						</div>

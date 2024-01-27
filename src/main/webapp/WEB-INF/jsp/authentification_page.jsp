@@ -72,7 +72,7 @@ $(document).ready (function(){
 	
 			<div class="UoHqaUkevwrvJbwERySSt">
 				<div class="_38wHjPwZlDoJPr9W-xySh _11sHgd9B8OCSX70aYZL0wk">
-						KOTECH LMS 회원 가입
+						LMS 회원 가입
 				</div>
 			</div>
 	
@@ -96,7 +96,7 @@ $(document).ready (function(){
 				</div>
 			</div>
 			<p class="_2d-xByT7Z84eA5s0I_vt_e USormlxqXIIh6_cCv9jhX">
-				<span>CopyRightⓒ2023 KOTECH. All Rights Reserved.
+				<span>CopyRightⓒ2023 . All Rights Reserved.
 				</span>
 				<a href="/"><span style="color : red;"> 홈으로가기</span></a>
 			</p>

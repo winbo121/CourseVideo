@@ -11,9 +11,9 @@
 *
 *   수정일         수정자                   수정내용
 *  -------    --------    ---------------------------
-*  2023.03.14 KOTECH      최초 생성
+*  2023.03.14       최초 생성
 *
-* author KOTECH
+* author 
 */
 %>
 <c:set var="kakaoImg" value="/images/egovframework/social/kakao/kakaotalk_sharing_btn_small_ov.png"/>

@@ -70,7 +70,7 @@ $(document).ready (function(){
 									<div class="checkout-form personal-address">
 										<div class="personal-info-head">
 											<h4>계정 탈퇴</h4>
-											<p>계정 탈퇴하면, KOTECH LMS 서비스를 더 이상 이용할 수 없습니다.</p>
+											<p>계정 탈퇴하면,  LMS 서비스를 더 이상 이용할 수 없습니다.</p>
 										</div>
 										<div class="un-subscribe p-0">
 											<a href="javascript:void(0);" class="btn btn-danger" id="btn_withdraw_user">탈퇴하기</a>

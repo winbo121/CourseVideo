@@ -88,7 +88,7 @@ body { text-align:center;background-color:#f8f8f8; }
 	<hr/>
 
 	<div id="ySContent">
-        <img src="<c:url value='/images/home/logo_kotech.png'/>" alt="코테크 LMS" style="">
+        
         <div class="ySContRow">
 			<div class="error_tit">
 				서비스 점검중
@@ -114,7 +114,7 @@ body { text-align:center;background-color:#f8f8f8; }
 	<div id="ySFooter">
 		<div class="ySFooterAera">
 			<address>
-				Copyright &#0169; <strong>KOTECH</strong> All Rights Reserved.
+				Copyright &#0169; <strong></strong> All Rights Reserved.
 			</address>
 		</div>
 	</div>

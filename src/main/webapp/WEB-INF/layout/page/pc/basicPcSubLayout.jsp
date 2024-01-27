@@ -22,7 +22,7 @@
 <meta name="Description" content="코테크시스템 LMS" />
 <meta id="_csrf" name="_csrf" content="${_csrf.token}" />
 <meta id="_csrf_header" name="_csrf_header" content="${_csrf.headerName}">
-<title>Kotech LMS</title>
+<title>LMS</title>
 
 <tiles:insertAttribute name="head_com_js" />
 
@@ -141,15 +141,17 @@
 							<a id="mobile_btn" href="javascript:void(0);"> <span
 								class="bar-icon"> <span></span> <span></span> <span></span>
 							</span>
-							</a> <a href="/" class="navbar-brand logo"> <img
-								src="/assets/img/logo.png" class="img-fluid" alt="Logo">
 							</a>
+<!-- 							 <a href="/" class="navbar-brand logo"> <img -->
+<!-- 								src="/assets/img/logo.png" class="img-fluid" alt="Logo"> -->
+<!-- 							</a> -->
 						</div>
 						<div class="main-menu-wrapper">
 							<div class="menu-header">
-								<a href="/" class="menu-logo"> <img
-									src="/assets/img/logo.png" class="img-fluid" alt="Logo">
-								</a> <a id="menu_close" class="menu-close"
+<!-- 								<a href="/" class="menu-logo"> <img -->
+<!-- 									src="/assets/img/logo.png" class="img-fluid" alt="Logo"> -->
+<!-- 								</a>  -->
+								<a id="menu_close" class="menu-close"
 									href="javascript:void(0);"> <i class="fas fa-times"></i>
 								</a>
 							</div>
@@ -296,12 +298,12 @@
 
 							<!-- Footer Widget -->
 							<div class="footer-widget footer-about">
-								<div class="footer-logo">
-									<img src="/assets/img/logo.png" alt="logo">
-								</div>
+<!-- 								<div class="footer-logo"> -->
+<!-- 									<img src="/assets/img/logo.png" alt="logo"> -->
+<!-- 								</div> -->
 								<div class="footer-about-content">
 									<p>Get the best with the best technology! <br />OCR, OPEN edX,
-											U-Learning, SI.<br />KOTECH SYSTEM</p>
+											U-Learning, SI.<br /></p>
 								</div>
 							</div>
 							<!-- /Footer Widget -->
@@ -351,11 +353,11 @@
 									</div>
 									<p>
 										<img src="/assets/img/icon/icon-19.svg" alt=""
-											class="img-fluid"> solihost@kotech.co.kr
+											class="img-fluid"> 
 									</p>
 									<p class="mb-0">
 										<img src="/assets/img/icon/icon-21.svg" alt=""
-											class="img-fluid"> +82) 02-6971-8941
+											class="img-fluid"> +82) 010-5579-8249
 									</p>
 								</div>
 							</div>
@@ -385,7 +387,7 @@
 							</div>
 							<div class="col-md-6">
 								<div class="copyright-text">
-									<p class="mb-0">&copy; 2023 KOTECH LMS. All rights reserved.</p>
+									<p class="mb-0">&copy; 2023 LMS. All rights reserved.</p>
 								</div>
 							</div>
 						</div>

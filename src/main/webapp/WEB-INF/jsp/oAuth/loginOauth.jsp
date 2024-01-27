@@ -13,7 +13,7 @@
 *  -------    --------    ---------------------------
 *  2023.03.10            최초 생성
 *
-* author KOTECH
+* author 
 */
 %>
 	<div id="social_login" style="display:flex; justify-content:space-around;">

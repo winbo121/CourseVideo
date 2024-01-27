@@ -22,7 +22,7 @@
 <meta name="Description" content="코테크시스템 LMS" />
 <meta id="_csrf" name="_csrf" content="${_csrf.token}" />
 <meta id="_csrf_header" name="_csrf_header" content="${_csrf.headerName}">
-<title>Kotech LMS</title>
+<title> LMS</title>
 
 <tiles:insertAttribute name="head_com_js" />
 
@@ -132,9 +132,10 @@
 							<a id="mobile_btn" href="javascript:void(0);"> <span
 								class="bar-icon"> <span></span> <span></span> <span></span>
 							</span>
-							</a> <a href="/" class="navbar-brand logo"> <img
-								src="/assets/img/logo/logo.png" class="img-fluid" alt="Logo">
 							</a>
+<!-- 							 <a href="/" class="navbar-brand logo"> <img -->
+<!-- 								src="/assets/img/logo/logo.png" class="img-fluid" alt="Logo"> -->
+<!-- 							</a> -->
 						</div>
 						<div class="main-menu-wrapper">
 							<div class="menu-header">
@@ -275,15 +276,15 @@
 
 								<!-- Footer Widget -->
 								<div class="footer-widget-three footer-about">
-									<div class="footer-three-logo">
-										<img class="img-fluid" src="/assets/img/logo/white_logo.png"
-											alt="logo">
-									</div>
+<!-- 									<div class="footer-three-logo"> -->
+<!-- 										<img class="img-fluid" src="/assets/img/logo/white_logo.png" -->
+<!-- 											alt="logo"> -->
+<!-- 									</div> -->
 									<div class="footer-three-about">
 										<p>
 											Get the best with the best technology! <br />It's going to
 											be the world's best in the field of OCR, OPEN edX,
-											U-Learning, SI.<br />KOTECH SYSTEM
+											U-Learning, SI.
 										</p>
 									</div>
 
@@ -309,16 +310,11 @@
 								</div>
 							</div>
 							<div class="col-md-4">
-								<div class="privacy-policy-three">
-									<ul>
-										<li><a href="http://kotech.co.kr" target=”_blank”>Contact
-												Us</a></li>
-									</ul>
-								</div>
+
 							</div>
 							<div class="col-md-4">
 								<div class="copyright-text-three">
-									<p class="mb-0">&copy; 2023 KOTECH LMS. All rights
+									<p class="mb-0">&copy; 2023 LMS. All rights
 										reserved.</p>
 								</div>
 							</div>
