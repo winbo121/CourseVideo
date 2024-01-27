@@ -59,6 +59,6 @@ plugins/org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_15.0.2.v20210201
 <Context docBase="D:/KOTECH/REPOSITORY/IMAGES" path="/REPOSITORY/IMAGES" reloadable="true"/>
 <Context docBase="D:/KOTECH/REPOSITORY/FILES" path="/REPOSITORY/FILES" reloadable="true"/>
 ```
-
-
+### 배포완료
+ http://gta5544.cafe24.com:8080/
 
