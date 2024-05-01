@@ -375,7 +375,7 @@
 							<div class="home-three-head section-header-title" data-aos="fade-up">
 								<div class="row align-items-center d-flex justify-content-between">
 									<div class="col-lg-6 col-sm-8">
-										<h2>코테크 추천강좌</h2>
+										<h2>추천강좌</h2>
 									</div>
 									<div class="col-lg-6 col-sm-4">
 										<div class="see-all">											

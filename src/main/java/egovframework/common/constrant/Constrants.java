@@ -102,9 +102,9 @@ public class Constrants {
 	/** MAIL_HOST **/
 	public static final String MAIL_HOST = "smtp.naver.com";
 	/** MAIL_USER_NAME **/
-	public static final String MAIL_USER_ID = "ghgurwls";
+	public static final String MAIL_USER_ID = "winbo121";
 	/** MAIL_PASSWORD **/
-	public static final String MAIL_PASSWORD = "kotech1234!";
+	public static final String MAIL_PASSWORD = "6289wwqq112233";
 	/** MAIL_TAIL **/
 	public static final String MAIL_TAIL = "@naver.com";
 	

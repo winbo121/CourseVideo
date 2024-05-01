@@ -19,7 +19,7 @@
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, user-scalable=0" />
 <meta name="Keywords" content="LMS" />
-<meta name="Description" content="코테크시스템 LMS" />
+<meta name="Description" content="LMS" />
 <meta id="_csrf" name="_csrf" content="${_csrf.token}" />
 <meta id="_csrf_header" name="_csrf_header" content="${_csrf.headerName}">
 <title>LMS</title>
