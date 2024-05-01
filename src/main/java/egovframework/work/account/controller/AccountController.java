@@ -31,7 +31,7 @@ import egovframework.work.account.service.AccountService;
 
 
 /** 계정, 로그인 사용자 정보
-  	/account11/**
+  	/account/**
 **/
 @Controller
 public class AccountController extends BaseController {
