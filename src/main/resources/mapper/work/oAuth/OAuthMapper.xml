@@ -65,6 +65,7 @@
 		where tc.group_code = 308 
 		and use_yn = 'Y' 
 		and sort_no not in (308)
+		and tc.code in ('kakao', 'google')
 		order by tc.sort_no
 		) tb;
     </select>

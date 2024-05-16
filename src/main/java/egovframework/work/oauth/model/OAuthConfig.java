@@ -14,8 +14,8 @@ public interface OAuthConfig {
 	/** https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api url + bearer access_token **/
 	static final String KAKAO_ACCESS_TOKEN_REVOKE = "https://kapi.kakao.com/v1/user/unlink";
 	static final String KAKAO_AUTH = "https://kauth.kakao.com/oauth/authorize";
-	static final String KAKAO_CLIENT_ID = "9d5450d7709f64ee170581bc85a11b74";
-	static final String KAKAO_CLIENT_SECRET = "izTpMb2bWwKaOqkKxYp77xJxEefd5ytP";
+	static final String KAKAO_CLIENT_ID = "2cbd96c40bfa19c8f948ecf821fb0b82";
+	static final String KAKAO_CLIENT_SECRET = "nICjqvBt6pItraUg9gxw9dtB2v9A1uJr";
 	static final String KAKAO_REDIRECT_URI = "/oauth/kakao/callback.do";
 	static final String KAKAO_SCOPE = "public_profile";
 	
