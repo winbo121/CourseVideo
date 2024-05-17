@@ -71,8 +71,8 @@ public interface OAuthConfig {
 	static final String GOOGLE_ACCESS_TOKEN = "https://accounts.google.com/o/oauth2/v2/auth";
 	static final String GOOGLE_ACCESS_TOKEN_REVOKE = "https://oauth2.googleapis.com/revoke";
 	static final String GOOGLE_AUTH = "https://oauth2.googleapis.com/token";
-	static final String GOOGLE_CLIENT_ID = "928161232270-n7ldsnnrsgvaf03h9u3e73dpsqhq5rfb.apps.googleusercontent.com";
-	static final String GOOGLE_CLIENT_SECRET = "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";
+	static final String GOOGLE_CLIENT_ID = "962006526710-ondm63mlgfv56toqgamj7rtlfscung58.apps.googleusercontent.com";
+	static final String GOOGLE_CLIENT_SECRET = "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";
 	static final String GOOGLE_REDIRECT_URI = "/oauth/google/callback.do";
 	static final String GOOGLE_SCOPE = "email profile openid";
 	
