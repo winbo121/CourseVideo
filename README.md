@@ -59,6 +59,12 @@ plugins/org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_15.0.2.v20210201
 <Context docBase="D:/KOTECH/REPOSITORY/IMAGES" path="/REPOSITORY/IMAGES" reloadable="true"/>
 <Context docBase="D:/KOTECH/REPOSITORY/FILES" path="/REPOSITORY/FILES" reloadable="true"/>
 ```
+### 로그인 Auth테스트를 잘 활용하려면 밑에 URL 사용
+
+```
+127.0.0.1:8080
+```
+
 ### 배포완료
 http://gta5544.cafe24.com
 
