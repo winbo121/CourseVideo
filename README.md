@@ -55,7 +55,7 @@ plugins/org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_15.0.2.v20210201
 ### 톰캣에서 URL 변경
 
 ```
-톰캣에서 /sample로 되있는것을 일반 / 로 변경
+톰캣에서 /sample 로 되있는것을 일반 / 로 변경
 ```
 
 ### 강의 업로드된 영상 또는 사진조회 
