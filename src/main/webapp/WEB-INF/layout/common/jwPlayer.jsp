@@ -6,11 +6,30 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<script type="text/javascript" src="https://cdn.jwplayer.com/libraries/RPTbBGeS.js"></script>
+<script type="text/javascript" src="/js/html5Player.js"></script>
 
 <style>
 .liHover:hover {
   background-color: #dcdcdc;
+}
+#moviePlayer video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+.course-rate-bar {
+  margin-top: 8px;
+}
+.course-rate-btn {
+  margin-right: 6px;
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+}
+.course-rate-btn.is-active {
+  border-color: #7B1FFE;
+  color: #7B1FFE;
 }
 
 </style>

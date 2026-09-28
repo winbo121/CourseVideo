@@ -6,17 +6,14 @@
 <%@ taglib prefix="sec"
 	uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<!-- <script type="text/javascript" src="/js/jwplayer/jwplayer.js"></script> -->
-<script type="text/javascript"
-	src="https://cdn.jwplayer.com/libraries/AIS1juY4.js"></script>
+<script type="text/javascript" src="/js/html5Player.js"></script>
 
 <style>
-.jwplayer .jw-controlbar {
-	display: none;
-}
-
-.jwplayer .jw-display {
-	display: none;
+.course-three-img video {
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+	background: #000;
 }
 </style>
 
@@ -99,7 +96,7 @@
 							          mute : true,
 							          "aspectratio": "16:9",
 							          "autostart": true,
-							          "controls": true,
+							          "controls": false,
 							          "preload": "metadata",
 							          "primary": "html5"
 							            
